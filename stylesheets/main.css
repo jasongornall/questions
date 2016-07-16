@@ -1,3 +1,54 @@
+.voting {
+  position: absolute;
+  background: #151515 url("../images/bkg.png") 0 0;
+  border-radius: 21px;
+  width: 40px;
+  height: 40px;
+  left: -20px;
+  top: -20px;
+}
+.voting .vote {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  top: 0;
+  line-height: 40px;
+}
+.voting [data-arrow="down"] {
+  -moz-border-radius: 0 0 30px 30px;
+  -webkit-border-radius: 0 0 30px 30px;
+  width: 30px;
+  height: 15px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  border: 5px solid transparent;
+  border-top: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.voting [data-arrow="down"]:hover {
+  border: 5px solid #f00;
+  border-top: 0;
+}
+.voting [data-arrow="up"] {
+  -moz-border-radius: 30px 30px 0 0;
+  -webkit-border-radius: 30px 30px 0 0;
+  width: 30px;
+  height: 15px;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  border: 5px solid transparent;
+  border-top: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.voting [data-arrow="up"]:hover {
+  border: 5px solid #008000;
+  border-bottom: 0;
+}
 body {
   text-align: center;
   margin: 0;
@@ -8,6 +59,76 @@ body {
   line-height: 1.5;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
-body .question {
+body .container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+body .container .questions {
+  margin: 0 auto;
+}
+body .container .question {
+  box-sizing: border-box;
+  text-align: left;
   display: inline-block;
+  padding: 20px;
+  border: 1px #fff dashed;
+  margin: 20px;
+  word-wrap: break-word;
+  width: 300px;
+}
+body .container .question[data-vote="up"] [data-arrow="up"] {
+  border: 5px solid #008000;
+  border-bottom: 0;
+}
+body .container .question[data-vote="down"] [data-arrow="down"] {
+  border: 5px solid #f00;
+  border-top: 0;
+}
+body .container .question .text-area-container {
+  position: relative;
+  width: 200px;
+}
+body .container .question .text-area-container textarea,
+body .container .question .text-area-container .resizer {
+  min-height: 25px;
+  font-family: sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  padding: 4px;
+  border: 1px solid;
+  overflow: hidden;
+  width: 100%;
+  line-height: normal;
+  margin-bottom: 2px;
+}
+body .container .question .text-area-container textarea {
+  color: #fff;
+  height: 100%;
+  position: absolute;
+  resize: none;
+  white-space: normal;
+  background: rgba(255,255,255,0.2);
+}
+body .container .question .text-area-container .resizer {
+  visibility: hidden;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+body .container .question .text-area-container .characters {
+  position: absolute;
+  text-align: right;
+  font-size: 13px;
+  color: #808080;
+  right: 4px;
+  bottom: 1px;
+}
+body .container .question input[type=submit] {
+  margin-top: 5px;
+  background: rgba(128,128,128,0.5);
+}
+body .container .question .question-header,
+body .container .question .text-area-container .question-header {
+  color: #0f0;
+  margin-bottom: 10px;
 }
