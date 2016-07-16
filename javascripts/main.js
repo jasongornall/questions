@@ -8,12 +8,11 @@ ref.authAnonymously(function(err, data) {
   renderQuestion = function(link, previous) {
     var getNextQ;
     if (link == null) {
-      link = "head/0";
+      link = "head";
     }
     if (previous == null) {
       previous = false;
     }
-    async.waterfall([]);
     getNextQ = function(finish) {
       if (link) {
         return ref.child(link).once('value', function(doc) {
@@ -24,37 +23,51 @@ ref.authAnonymously(function(err, data) {
       }
     };
     return getNextQ(function(doc) {
-      var $question, answer_1, answer_2, question, _ref;
-      _ref = (doc != null ? doc.val() : void 0) || {}, question = _ref.question, answer_1 = _ref.answer_1, answer_2 = _ref.answer_2;
-      $question = $('body > .question');
-      if (question && answer_1 && answer_2) {
-        $question.html(teacup.render(function() {
-          div('.question', function() {
-            return question;
-          });
-          return div('.answers', function() {
-            div('.answer_1', {
-              'data-next': answer_1.next
+      var $question, $questions;
+      $questions = $('body > .questions');
+      $questions.empty();
+      if (doc !== null) {
+        doc.forEach(function(child_doc) {
+          var $question, answer_1, answer_2, question, _ref;
+          _ref = (child_doc != null ? child_doc.val() : void 0) || {}, question = _ref.question, answer_1 = _ref.answer_1, answer_2 = _ref.answer_2;
+          if (!(question && answer_1 && answer_2)) {
+            return false;
+          }
+          $question = $questions.append(teacup.render(function() {
+            return div('.question', {
+              'data-key': child_doc.key()
             }, function() {
-              return answer_1.text;
+              div('.question-header', function() {
+                return question;
+              });
+              return div('.answers', function() {
+                div('.answer_1', {
+                  'data-next': answer_1.next
+                }, function() {
+                  return answer_1.text;
+                });
+                return div('.answer_2', {
+                  'data-next': answer_2.next
+                }, function() {
+                  return answer_2.text;
+                });
+              });
             });
-            return div('.answer_2', {
-              'data-next': answer_2.next
-            }, function() {
-              return answer_2.text;
-            });
+          }));
+          $question.find('.answers > div').on('click', function(e) {
+            var $el, key, next;
+            $el = $(e.currentTarget);
+            next = $el.data('next');
+            key = $el.closest('.question').data('key');
+            return renderQuestion(next, "" + link + "/" + key + "/" + ($el.attr('class')));
           });
-        }));
-        return $question.find('.answers > div').on('click', function(e) {
-          var $el, next;
-          $el = $(e.currentTarget);
-          next = $el.data('next');
-          return renderQuestion(next, "" + link + "/" + ($el.attr('class')));
+          return false;
         });
-      } else {
-        $question.html(teacup.render(function() {
+      }
+      $question = $questions.append(teacup.render(function() {
+        return div('.question', function() {
           return form(function() {
-            input('.question', {
+            input('.question-header', {
               placeholder: "Add your own question to keep it going!",
               required: true
             });
@@ -73,31 +86,32 @@ ref.authAnonymously(function(err, data) {
               value: 'submit'
             });
           });
-        }));
-        console.log("" + previous + "/next");
-        return $question.find('form').on('submit', function(e) {
-          var $el, new_q;
-          $el = $(e.currentTarget);
-          $el.find('input').each(function(index, value) {});
-          new_q = ref.child('leaf').push();
-          new_q.set({
-            answer_1: {
-              text: $el.find('input.answer_1').val()
-            },
-            answer_2: {
-              text: $el.find('input.answer_2').val()
-            },
-            question: $el.find('input.question').val()
-          }, function() {
-            var question_location;
-            question_location = "leaf/" + (new_q.key());
-            return ref.child("" + previous + "/next").set(question_location, function() {
-              return renderQuestion(question_location);
-            });
-          });
-          return false;
         });
-      }
+      }));
+      return $question.find('form').on('submit', function(e) {
+        var $el, new_q;
+        if (!link) {
+          link = "leaf/" + (ref.child('leaf').push().key());
+        }
+        $el = $(e.currentTarget);
+        new_q = ref.child(link).push();
+        new_q.set({
+          answer_1: {
+            text: $el.find('input.answer_1').val()
+          },
+          answer_2: {
+            text: $el.find('input.answer_2').val()
+          },
+          question: $el.find('input.question-header').val()
+        }, function() {
+          var question_location;
+          question_location = "" + link + "/" + (new_q.key());
+          return ref.child("" + previous + "/next").set(link, function() {
+            return renderQuestion(link, previous);
+          });
+        });
+        return false;
+      });
     });
   };
   return renderQuestion();
