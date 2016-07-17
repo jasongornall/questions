@@ -6,7 +6,70 @@ msnry = null;
 ref = new Firebase("https://question-everything.firebaseio.com");
 
 ref.authAnonymously(function(err, data) {
-  var renderQuestion;
+  var renderHeader, renderQuestion;
+  renderHeader = function() {
+    var $header, nav, subjects, times;
+    nav = {
+      '/pages/faq.html': 'faq',
+      '/pages/explanation.html': 'what is this',
+      '/pages/graph.html': 'view graph',
+      '/main.html': 'home'
+    };
+    subjects = {
+      'serious': 'Serious',
+      'fun': 'Fun',
+      'stories': 'Stories',
+      'testing': 'testing'
+    };
+    times = {
+      'past-hour': 'past hour',
+      'past-month': 'past 24 hours',
+      'past-year': 'past year',
+      'all-time': 'all time'
+    };
+    $header = $('body > .container > .header');
+    return $header.html(teacup.render(function() {
+      div('.nav', function() {
+        var key, val, _results;
+        _results = [];
+        for (key in nav) {
+          val = nav[key];
+          _results.push(a('.nav-item', {
+            href: key
+          }, function() {
+            return val;
+          }));
+        }
+        return _results;
+      });
+      div('.subjects', function() {
+        var key, val, _results;
+        _results = [];
+        for (key in subjects) {
+          val = subjects[key];
+          _results.push(div('.subject', {
+            'data-subject': key
+          }, function() {
+            return val;
+          }));
+        }
+        return _results;
+      });
+      return select('.time-slot', function() {
+        var key, val, _results;
+        _results = [];
+        for (key in times) {
+          val = times[key];
+          _results.push(option({
+            value: key
+          }, function() {
+            return val;
+          }));
+        }
+        return _results;
+      });
+    }));
+  };
   renderQuestion = function(link, previous) {
     var $questions, getNextQ;
     if (link == null) {
@@ -232,5 +295,6 @@ ref.authAnonymously(function(err, data) {
       return $(window).trigger('resize');
     });
   };
+  renderHeader();
   return renderQuestion();
 });

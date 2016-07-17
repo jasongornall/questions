@@ -4,6 +4,40 @@ ref = new Firebase "https://question-everything.firebaseio.com"
 
 ref.authAnonymously (err, data) ->
 
+  renderHeader = ->
+    nav = {
+      '/pages/faq.html': 'faq'
+      '/pages/explanation.html': 'what is this'
+      '/pages/graph.html': 'view graph'
+      '/main.html': 'home'
+    }
+    subjects = {
+      'serious': 'Serious'
+      'fun': 'Fun'
+      'stories': 'Stories'
+      'testing': 'testing'
+    }
+    times  = {
+      'past-hour': 'past hour'
+      'past-month': 'past 24 hours'
+      'past-year': 'past year'
+      'all-time': 'all time'
+    }
+
+    $header = $('body > .container > .header')
+    $header.html teacup.render ->
+      div '.nav', ->
+        for key, val of nav
+          a '.nav-item', href: key, -> val
+      div '.subjects', ->
+        for key, val of subjects
+          div '.subject', 'data-subject': key, -> val
+      select '.time-slot', ->
+        for key, val of times
+          option value: key, -> val
+
+
+
   renderQuestion = (link = "head", previous = false) ->
 
     getNextQ = (finish) ->
@@ -145,6 +179,8 @@ ref.authAnonymously (err, data) ->
       msnry = $('.questions').data 'masonry'
       $(window).trigger('resize')
 
+
+  renderHeader()
   renderQuestion()
 
 
