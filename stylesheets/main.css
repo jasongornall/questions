@@ -59,15 +59,25 @@ body {
   line-height: 1.5;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
-body .container > .header .subjects {
+body .container > .header > .nav {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 11px;
+  padding: 10px;
+}
+body .container > .header > .nav > .nav-item {
+  padding: 0 10px;
+}
+body .container > .header > .subjects {
+  max-width: 750px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-around;
   padding: 10px;
-  max-width: 750px;
   margin: 0 auto;
   overflow: hidden;
 }
-body .container > .header .subjects .subject {
+body .container > .header > .subjects .subject {
   padding: 0 20px;
 }
 body .container .questions-container {

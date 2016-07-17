@@ -8,34 +8,59 @@ ref = new Firebase("https://question-everything.firebaseio.com");
 ref.authAnonymously(function(err, data) {
   var renderHeader, renderQuestion;
   renderHeader = function() {
-    var $header, nav, subjects, times;
+    var $header, nav, nav_selected, subject_selected, subjects, times, times_selected, updateUrl;
     nav = {
-      '/pages/faq.html': 'faq',
-      '/pages/explanation.html': 'what is this',
-      '/pages/graph.html': 'view graph',
-      '/main.html': 'home'
+      'h': 'home',
+      'f': 'faq',
+      'e': 'what is this',
+      'g': 'view graph'
     };
     subjects = {
-      'serious': 'Serious',
-      'fun': 'Fun',
-      'stories': 'Stories',
-      'testing': 'testing'
+      'a': 'All',
+      's': 'Serious',
+      'f': 'Fun',
+      'st': 'Stories',
+      't': 'testing'
     };
     times = {
-      'past-hour': 'past hour',
-      'past-month': 'past 24 hours',
-      'past-year': 'past year',
-      'all-time': 'all time'
+      'h': 'past hour',
+      'm': 'past 24 hours',
+      'y': 'past year',
+      'a': 'all time'
     };
     $header = $('body > .container > .header');
-    return $header.html(teacup.render(function() {
+    nav_selected = $.url('?n') || 'h';
+    subject_selected = $.url('?s') || 'a';
+    times_selected = $.url('?t') || 'a';
+    updateUrl = function(json) {
+      var k, key, params, v, val, variables;
+      variables = $.url('?') || {};
+      for (key in json) {
+        val = json[key];
+        variables[key] = val;
+      }
+      params = ((function() {
+        var _results;
+        _results = [];
+        for (k in variables) {
+          v = variables[k];
+          _results.push("" + k + "=" + (encodeURIComponent(v)));
+        }
+        return _results;
+      })()).join('&');
+      return history.pushState(null, null, "?" + params);
+    };
+    $header.html(teacup.render(function() {
       div('.nav', function() {
         var key, val, _results;
         _results = [];
         for (key in nav) {
           val = nav[key];
-          _results.push(a('.nav-item', {
-            href: key
+          _results.push(div('.nav-item', {
+            'data': {
+              'nav': key,
+              'selected': key === nav_selected
+            }
           }, function() {
             return val;
           }));
@@ -48,7 +73,10 @@ ref.authAnonymously(function(err, data) {
         for (key in subjects) {
           val = subjects[key];
           _results.push(div('.subject', {
-            'data-subject': key
+            'data': {
+              subject: key,
+              selected: key === subject_selected
+            }
           }, function() {
             return val;
           }));
@@ -69,6 +97,24 @@ ref.authAnonymously(function(err, data) {
         return _results;
       });
     }));
+    $header.find('.nav-item').on('click', function(e) {
+      var $el;
+      $el = $(e.currentTarget);
+      $el.siblings().attr('data-selected', false);
+      $el.attr('data-selected', true);
+      return updateUrl({
+        'n': $el.data('nav')
+      });
+    });
+    return $header.find('.subjects .subject').on('click', function(e) {
+      var $el;
+      $el = $(e.currentTarget);
+      $el.siblings().attr('data-selected', false);
+      $el.attr('data-selected', true);
+      return updateUrl({
+        's': $el.data('subject')
+      });
+    });
   };
   renderQuestion = function(link, previous) {
     var $questions, getNextQ;

@@ -6,36 +6,62 @@ ref.authAnonymously (err, data) ->
 
   renderHeader = ->
     nav = {
-      '/pages/faq.html': 'faq'
-      '/pages/explanation.html': 'what is this'
-      '/pages/graph.html': 'view graph'
-      '/main.html': 'home'
+      'h': 'home'
+      'f': 'faq'
+      'e': 'what is this'
+      'g': 'view graph'
     }
     subjects = {
-      'serious': 'Serious'
-      'fun': 'Fun'
-      'stories': 'Stories'
-      'testing': 'testing'
+      'a': 'All'
+      's': 'Serious'
+      'f': 'Fun'
+      'st': 'Stories'
+      't': 'testing'
     }
     times  = {
-      'past-hour': 'past hour'
-      'past-month': 'past 24 hours'
-      'past-year': 'past year'
-      'all-time': 'all time'
+      'h': 'past hour'
+      'm': 'past 24 hours'
+      'y': 'past year'
+      'a': 'all time'
     }
 
     $header = $('body > .container > .header')
+    nav_selected = $.url('?n') or 'h'
+    subject_selected = $.url('?s') or 'a'
+    times_selected = $.url('?t') or 'a'
+    updateUrl = (json) ->
+      variables =  $.url('?') or {}
+      variables[key] = val for key, val of json
+      params = ("#{k}=#{encodeURIComponent v}" for k, v of variables).join '&'
+      history.pushState(null, null, "?#{params}");
     $header.html teacup.render ->
       div '.nav', ->
         for key, val of nav
-          a '.nav-item', href: key, -> val
+          div '.nav-item', 'data': {
+            'nav': key
+            'selected': key is nav_selected
+          }, -> val
       div '.subjects', ->
         for key, val of subjects
-          div '.subject', 'data-subject': key, -> val
+          div '.subject', 'data': {
+            subject: key
+            selected: key is subject_selected
+          }, -> val
       select '.time-slot', ->
         for key, val of times
           option value: key, -> val
 
+    $header.find('.nav-item').on 'click', (e) ->
+      $el = $ e.currentTarget
+      $el.siblings().attr 'data-selected', false
+      $el.attr 'data-selected', true
+      updateUrl {'n': $el.data 'nav'}
+
+    $header.find('.subjects .subject').on 'click', (e) ->
+      $el = $ e.currentTarget
+      $el.siblings().attr 'data-selected', false
+      $el.attr 'data-selected', true
+      updateUrl {'s': $el.data 'subject'}
 
 
   renderQuestion = (link = "head", previous = false) ->
