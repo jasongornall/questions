@@ -1,5 +1,7 @@
 msnry = null
 ref = new Firebase "https://question-everything.firebaseio.com"
+
+
 ref.authAnonymously (err, data) ->
 
   renderQuestion = (link = "head", previous = false) ->
@@ -16,6 +18,11 @@ ref.authAnonymously (err, data) ->
       div '.questions'
 
     $questions = $('body .questions')
+    $(window).off 'resize', ->
+    $(window).on 'resize', ->
+      width = Math.floor $(window).width() / 340
+      $('.questions-container').css 'max-width', "#{width * 340}px"
+
     getNextQ (doc) ->
       if doc isnt null
         doc.forEach (child_doc) ->
@@ -136,6 +143,7 @@ ref.authAnonymously (err, data) ->
           shelfOrder: 1
       }
       msnry = $('.questions').data 'masonry'
+      $(window).trigger('resize')
 
   renderQuestion()
 

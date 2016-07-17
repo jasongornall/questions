@@ -29,6 +29,12 @@ ref.authAnonymously(function(err, data) {
       return div('.questions');
     }));
     $questions = $('body .questions');
+    $(window).off('resize', function() {});
+    $(window).on('resize', function() {
+      var width;
+      width = Math.floor($(window).width() / 340);
+      return $('.questions-container').css('max-width', "" + (width * 340) + "px");
+    });
     return getNextQ(function(doc) {
       var $new_question;
       if (doc !== null) {
@@ -222,7 +228,8 @@ ref.authAnonymously(function(err, data) {
           shelfOrder: 1
         }
       });
-      return msnry = $('.questions').data('masonry');
+      msnry = $('.questions').data('masonry');
+      return $(window).trigger('resize');
     });
   };
   return renderQuestion();
