@@ -1,34 +1,34 @@
 msnry = null
 ref = new Firebase "https://question-everything.firebaseio.com"
 
+NAV = {
+  'home': 'home'
+  'faq': 'faq'
+  'exp': 'what is this'
+  'graph': 'view graph'
+}
+SUBJECTS = {
+  'fun': 'Fun'
+  'serious': 'Serious'
+  'stories': 'Stories'
+  'test': 'testing'
+}
+TIMES  = {
+  'hour': 'past hour'
+  'day': 'past 24 hours'
+  'year': 'past year'
+  'all': 'all time'
+}
+
 
 ref.authAnonymously (err, data) ->
 
   renderHeader = ->
-    nav = {
-      'h': 'home'
-      'f': 'faq'
-      'e': 'what is this'
-      'g': 'view graph'
-    }
-    subjects = {
-      'a': 'All'
-      's': 'Serious'
-      'f': 'Fun'
-      'st': 'Stories'
-      't': 'testing'
-    }
-    times  = {
-      'h': 'past hour'
-      'm': 'past 24 hours'
-      'y': 'past year'
-      'a': 'all time'
-    }
 
     $header = $('body > .container > .header')
-    nav_selected = $.url('?n') or 'h'
-    subject_selected = $.url('?s') or 'a'
-    times_selected = $.url('?t') or 'a'
+    nav_selected = $.url('?n') or 'home'
+    subject_selected = $.url('?s') or 'fun'
+    times_selected = $.url('?t') or 'all'
     updateUrl = (json) ->
       variables =  $.url('?') or {}
       variables[key] = val for key, val of json
@@ -36,19 +36,19 @@ ref.authAnonymously (err, data) ->
       history.pushState(null, null, "?#{params}");
     $header.html teacup.render ->
       div '.nav', ->
-        for key, val of nav
+        for key, val of NAV
           div '.nav-item', 'data': {
             'nav': key
-            'selected': key is nav_selected
+            'selected': "#{key is nav_selected}"
           }, -> val
       div '.subjects', ->
-        for key, val of subjects
+        for key, val of SUBJECTS
           div '.subject', 'data': {
             subject: key
-            selected: key is subject_selected
+            selected: "#{key is subject_selected}"
           }, -> val
       select '.time-slot', ->
-        for key, val of times
+        for key, val of TIMES
           option value: key, -> val
 
     $header.find('.nav-item').on 'click', (e) ->
@@ -61,10 +61,11 @@ ref.authAnonymously (err, data) ->
       $el = $ e.currentTarget
       $el.siblings().attr 'data-selected', false
       $el.attr 'data-selected', true
+      renderQuestion $el.data 'subject'
       updateUrl {'s': $el.data 'subject'}
 
 
-  renderQuestion = (link = "head", previous = false) ->
+  renderQuestion = (link = "fun", previous = false) ->
 
     getNextQ = (finish) ->
       if link
@@ -190,7 +191,11 @@ ref.authAnonymously (err, data) ->
             answer_2:
               text: $el.find('textarea.answer_2').val()
             question: $el.find('textarea.question-header').val()
+            created: Firebase.ServerValue.TIMESTAMP
+            vote: 0
+            vote_inverse: 0
           }, ->
+            return renderQuestion(link, previous) unless previous
             question_location = "#{link}/#{new_q.key()}"
             ref.child("#{previous}/next").set link, ->
               renderQuestion link, previous
@@ -207,7 +212,7 @@ ref.authAnonymously (err, data) ->
 
 
   renderHeader()
-  renderQuestion()
+  renderQuestion $.url('?s') or 'fun'
 
 
 
