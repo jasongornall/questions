@@ -96,9 +96,21 @@ body
         word-wrap: break-word;
         white-space: pre-wrap;
         width 300px
-        .answers .text:hover
-          cursor pointer
-          text-decoration: underline;
+        .answers .text
+          display list-item
+          list-style-position inside
+          &:hover
+            cursor pointer
+            text-decoration: underline;
+          &:not([data-next^='leaf']):after
+            content: " *"
+            color red
+        .asterisk
+          font-size: 12px;
+          margin-top: 20px;
+          &:before
+            content: "* "
+            color red
         &[data-vote="up"] [data-arrow="up"]
           border: 5px solid green;
           border-bottom: 0;

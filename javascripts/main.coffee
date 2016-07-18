@@ -19,7 +19,7 @@ TIMES  = {
   'year': 'past year'
   'all': 'all time'
 }
-
+authedData = null
 
 ref.authAnonymously (err, data) ->
 
@@ -64,7 +64,7 @@ ref.authAnonymously (err, data) ->
       renderQuestion $el.data 'subject'
       updateUrl {'s': $el.data 'subject'}
 
-  renderNewQuestionPopup = ->
+  renderLoginPopup = ->
 
   renderQuestion = (link = "fun", previous = false) ->
 
@@ -99,12 +99,20 @@ ref.authAnonymously (err, data) ->
                 div 'data-arrow':'down'
               div '.question-title', -> title
               div '.question-body', -> question
+              flag = true
               div '.answers', ->
                 for opt in [1..4]
                   ans = child_doc.child("answer_#{opt}").val()
                   continue unless ans
                   div ->
-                    span ".answer_#{opt}.text", 'data-next': ans.next, -> ans.text
+                    span '.text', data: {
+                      answer: "answer_#{opt}"
+                      next: ans.next
+                    }, -> ans.text
+                  flag = flag and ans.next
+              if not flag
+                div '.asterisk', -> 'has no children'
+
           $questions.append $question
           do ($question) ->
             $question.find('[data-arrow]').on 'click', (e) ->
@@ -151,7 +159,7 @@ ref.authAnonymously (err, data) ->
               $el = $ e.currentTarget
               next = $el.data('next')
               key = $el.closest('.question').data 'key'
-              key_previous = "#{link}/#{key}/#{$el.attr('class')}"
+              key_previous = "#{link}/#{key}/#{$el.data('answer')}"
               ref.child("#{key_previous}/count").transaction (currentCount) ->
                 currentCount ?= 0
                 return currentCount + 1

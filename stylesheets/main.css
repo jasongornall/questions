@@ -105,9 +105,25 @@ body .container .questions-container .question {
   white-space: pre-wrap;
   width: 300px;
 }
+body .container .questions-container .question .answers .text {
+  display: list-item;
+  list-style-position: inside;
+}
 body .container .questions-container .question .answers .text:hover {
   cursor: pointer;
   text-decoration: underline;
+}
+body .container .questions-container .question .answers .text:not([data-next^='leaf']):after {
+  content: " *";
+  color: #f00;
+}
+body .container .questions-container .question .asterisk {
+  font-size: 12px;
+  margin-top: 20px;
+}
+body .container .questions-container .question .asterisk:before {
+  content: "* ";
+  color: #f00;
 }
 body .container .questions-container .question[data-vote="up"] [data-arrow="up"] {
   border: 5px solid #008000;
