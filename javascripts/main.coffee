@@ -231,7 +231,6 @@ ref.authAnonymously (err, data) ->
             new_q_obj["answer_#{c}"] = {text: answer}
             c++
 
-          debugger
           new_q.set new_q_obj, ->
             return renderQuestion(link, previous) unless previous
             question_location = "#{link}/#{new_q.key()}"
