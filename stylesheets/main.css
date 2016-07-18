@@ -108,6 +108,7 @@ body .container .questions-container .question {
 body .container .questions-container .question .answers .text {
   display: list-item;
   list-style-position: inside;
+  margin-right: 10px;
 }
 body .container .questions-container .question .answers .text:hover {
   cursor: pointer;
