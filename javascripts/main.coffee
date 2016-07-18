@@ -33,7 +33,7 @@ ref.authAnonymously (err, data) ->
       variables =  $.url('?') or {}
       variables[key] = val for key, val of json
       params = ("#{k}=#{encodeURIComponent v}" for k, v of variables).join '&'
-      history.pushState(null, null, "?#{params}");
+      # history.pushState(null, null, "?#{params}");
     $header.html teacup.render ->
       div '.nav', ->
         for key, val of NAV

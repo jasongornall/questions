@@ -43,7 +43,7 @@ ref.authAnonymously(function(err, data) {
         val = json[key];
         variables[key] = val;
       }
-      params = ((function() {
+      return params = ((function() {
         var _results;
         _results = [];
         for (k in variables) {
@@ -52,7 +52,6 @@ ref.authAnonymously(function(err, data) {
         }
         return _results;
       })()).join('&');
-      return history.pushState(null, null, "?" + params);
     };
     $header.html(teacup.render(function() {
       div('.nav', function() {
