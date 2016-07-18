@@ -71,7 +71,6 @@ ref.authAnonymously (err, data) ->
     getNextQ = (finish) ->
       if link
         ref.child(link).orderByChild("vote_inverse").once 'value', (doc) ->
-          console.log doc.val()
           finish doc
       else
         finish null
@@ -117,7 +116,6 @@ ref.authAnonymously (err, data) ->
           do ($question) ->
             $question.find('[data-arrow]').on 'click', (e) ->
               $el = $ e.currentTarget
-              debugger;
               incriment = if $el.data('arrow') is 'up' then 1 else -1
               item = JSON.parse localStorage.getItem(child_doc.key()) or '{}'
               modified_incriment = incriment

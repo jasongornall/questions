@@ -132,7 +132,6 @@ ref.authAnonymously(function(err, data) {
     getNextQ = function(finish) {
       if (link) {
         return ref.child(link).orderByChild("vote_inverse").once('value', function(doc) {
-          console.log(doc.val());
           return finish(doc);
         });
       } else {
@@ -214,7 +213,6 @@ ref.authAnonymously(function(err, data) {
             $question.find('[data-arrow]').on('click', function(e) {
               var $el, incriment, modified_incriment;
               $el = $(e.currentTarget);
-              debugger;
               incriment = $el.data('arrow') === 'up' ? 1 : -1;
               item = JSON.parse(localStorage.getItem(child_doc.key()) || '{}');
               modified_incriment = incriment;
