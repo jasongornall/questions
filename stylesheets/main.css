@@ -71,6 +71,10 @@ body .container > .header > .nav {
 body .container > .header > .nav > .nav-item {
   padding: 0 10px;
 }
+body .container > .header > .nav > .nav-item:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
 body .container > .header > .subjects {
   max-width: 750px;
   margin: 0 auto;
@@ -83,6 +87,10 @@ body .container > .header > .subjects {
 body .container > .header > .subjects .subject {
   padding: 0 20px;
 }
+body .container > .header > .subjects .subject:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
 body .container .questions-container {
   margin: 0 auto;
 }
@@ -94,8 +102,12 @@ body .container .questions-container .question {
   border: 1px #fff dashed;
   margin: 20px;
   word-wrap: break-word;
-  white-space: pre;
+  white-space: pre-wrap;
   width: 300px;
+}
+body .container .questions-container .question .answers .text:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 body .container .questions-container .question[data-vote="up"] [data-arrow="up"] {
   border: 5px solid #008000;
@@ -105,12 +117,19 @@ body .container .questions-container .question[data-vote="down"] [data-arrow="do
   border: 5px solid #f00;
   border-top: 0;
 }
-body .container .questions-container .question .text-area-container {
-  position: relative;
-  width: 200px;
+body .container .questions-container .question .open-pop {
+  text-align: center;
 }
-body .container .questions-container .question .text-area-container textarea,
-body .container .questions-container .question .text-area-container .resizer {
+body .container .questions-container .question .open-pop:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+body .container .questions-container .question .new-question .text-area-container {
+  position: relative;
+  width: 100%;
+}
+body .container .questions-container .question .new-question .text-area-container textarea,
+body .container .questions-container .question .new-question .text-area-container .resizer {
   min-height: 25px;
   font-family: sans-serif;
   font-size: 14px;
@@ -121,8 +140,9 @@ body .container .questions-container .question .text-area-container .resizer {
   width: 100%;
   line-height: normal;
   margin-bottom: 2px;
+  left: 0;
 }
-body .container .questions-container .question .text-area-container textarea {
+body .container .questions-container .question .new-question .text-area-container textarea {
   color: #fff;
   height: 100%;
   position: absolute;
@@ -130,13 +150,21 @@ body .container .questions-container .question .text-area-container textarea {
   white-space: normal;
   background: rgba(255,255,255,0.2);
 }
-body .container .questions-container .question .text-area-container .resizer {
+body .container .questions-container .question .new-question .text-area-container textarea.question-body {
+  color: #0f0;
+  margin-bottom: 10px;
+}
+body .container .questions-container .question .new-question .text-area-container textarea.question-title {
+  color: #f60;
+  margin-bottom: 10px;
+}
+body .container .questions-container .question .new-question .text-area-container .resizer {
   visibility: hidden;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-body .container .questions-container .question .text-area-container .characters {
+body .container .questions-container .question .new-question .text-area-container .characters {
   position: absolute;
   text-align: right;
   font-size: 13px;
@@ -144,12 +172,15 @@ body .container .questions-container .question .text-area-container .characters 
   right: 4px;
   bottom: 1px;
 }
-body .container .questions-container .question input[type=submit] {
+body .container .questions-container .question .new-question input[type=submit] {
   margin-top: 5px;
   background: rgba(128,128,128,0.5);
 }
-body .container .questions-container .question .question-header,
-body .container .questions-container .question .text-area-container .question-header {
+body .container .questions-container .question-body {
   color: #0f0;
+  margin-bottom: 10px;
+}
+body .container .questions-container .question-title {
+  color: #f60;
   margin-bottom: 10px;
 }

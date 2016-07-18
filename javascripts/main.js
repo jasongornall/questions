@@ -27,7 +27,7 @@ TIMES = {
 };
 
 ref.authAnonymously(function(err, data) {
-  var renderHeader, renderQuestion;
+  var renderHeader, renderNewQuestionPopup, renderQuestion;
   renderHeader = function() {
     var $header, nav_selected, subject_selected, times_selected, updateUrl;
     $header = $('body > .container > .header');
@@ -119,6 +119,7 @@ ref.authAnonymously(function(err, data) {
       });
     });
   };
+  renderNewQuestionPopup = function() {};
   renderQuestion = function(link, previous) {
     var $questions, getNextQ;
     if (link == null) {
@@ -151,9 +152,9 @@ ref.authAnonymously(function(err, data) {
       var $new_question;
       if (doc !== null) {
         doc.forEach(function(child_doc) {
-          var $question, answer_1, answer_2, item, question, vote, _ref;
-          _ref = (child_doc != null ? child_doc.val() : void 0) || {}, question = _ref.question, answer_1 = _ref.answer_1, answer_2 = _ref.answer_2, vote = _ref.vote;
-          if (!(question && answer_1 && answer_2)) {
+          var $question, item, question, title, vote, _ref;
+          _ref = (child_doc != null ? child_doc.val() : void 0) || {}, question = _ref.question, vote = _ref.vote, title = _ref.title;
+          if (!(question && title)) {
             return false;
           }
           item = localStorage.getItem(child_doc.key()) || {};
@@ -170,20 +171,29 @@ ref.authAnonymously(function(err, data) {
                   'data-arrow': 'down'
                 });
               });
-              div('.question-header', function() {
+              div('.question-title', function() {
+                return title;
+              });
+              div('.question-body', function() {
                 return question;
               });
               return div('.answers', function() {
-                div('.answer_1', {
-                  'data-next': answer_1.next
-                }, function() {
-                  return answer_1.text;
-                });
-                return div('.answer_2', {
-                  'data-next': answer_2.next
-                }, function() {
-                  return answer_2.text;
-                });
+                var ans, opt, _i, _results;
+                _results = [];
+                for (opt = _i = 1; _i <= 4; opt = ++_i) {
+                  ans = child_doc.child("answer_" + opt).val();
+                  if (!ans) {
+                    continue;
+                  }
+                  _results.push(div(function() {
+                    return span(".answer_" + opt + ".text", {
+                      'data-next': ans.next
+                    }, function() {
+                      return ans.text;
+                    });
+                  }));
+                }
+                return _results;
               });
             });
           }));
@@ -221,7 +231,6 @@ ref.authAnonymously(function(err, data) {
               $vote.toggleClass('bad', new_vote < 0);
               $vote.toggleClass('good', new_vote > 5);
               item = JSON.parse(localStorage.getItem(child_doc.key()) || '{}');
-              debugger;
               local_vote = 'none';
               if (item.vote > 0) {
                 local_vote = 'up';
@@ -230,7 +239,7 @@ ref.authAnonymously(function(err, data) {
               }
               return $question.attr('data-vote', local_vote);
             });
-            $question.find('.answers > div').on('click', function(e) {
+            $question.find('.answers .text').on('click', function(e) {
               var $el, key, key_previous, next;
               $el = $(e.currentTarget);
               next = $el.data('next');
@@ -250,83 +259,129 @@ ref.authAnonymously(function(err, data) {
       }
       $new_question = $(teacup.render(function() {
         return div('.question', function() {
-          return form(function() {
-            div('.text-area-container', function() {
-              textarea('.question-header', {
-                maxlength: 250,
-                placeholder: "Add your own question",
-                required: true
+          div('.open-pop', function() {
+            return 'Post Something Original';
+          });
+          return div('.modalDialog', function() {
+            return div('.new-question', function() {
+              h3(function() {
+                return 'Submitting a new Post';
               });
-              div('.resizer question-header', function() {
-                return 'A';
+              span({
+                "class": 'close'
+              }, function() {
+                return 'X';
               });
-              return div('.characters', function() {
-                return '';
+              return form(function() {
+                div('.text-area-container', function() {
+                  textarea('.question-title', {
+                    'data-maxlength': 120,
+                    placeholder: "Add title",
+                    required: true
+                  });
+                  div('.resizer question-body', function() {
+                    return 'A';
+                  });
+                  return div('.characters', function() {
+                    return '';
+                  });
+                });
+                div('.text-area-container', function() {
+                  textarea('.question-body', {
+                    'data-maxlength': 250,
+                    placeholder: "Add your body",
+                    required: true
+                  });
+                  div('.resizer question-body', function() {
+                    return 'A';
+                  });
+                  return div('.characters', function() {
+                    return '';
+                  });
+                });
+                div('.answers', function() {
+                  var opt, _i, _results;
+                  _results = [];
+                  for (opt = _i = 1; _i <= 4; opt = ++_i) {
+                    _results.push(div('.text-area-container', function() {
+                      var placeholder, required;
+                      required = opt === 1;
+                      placeholder = required ? 'Put choice here' : 'Put (optional) choice here';
+                      textarea(".answer_" + opt, {
+                        'data-maxlength': 140,
+                        placeholder: placeholder,
+                        required: required
+                      });
+                      div('.resizer', function() {
+                        return 'A';
+                      });
+                      return div('.characters', function() {
+                        return '';
+                      });
+                    }));
+                  }
+                  return _results;
+                });
+                return input({
+                  type: 'submit',
+                  value: 'submit'
+                });
               });
-            });
-            div('.answers', function() {
-              div('.text-area-container', function() {
-                textarea('.answer_1', {
-                  maxlength: 140,
-                  placeholder: 'Put answer one here',
-                  required: true
-                });
-                div('.resizer answer_1', function() {
-                  return 'A';
-                });
-                return div('.characters', function() {
-                  return '';
-                });
-              });
-              return div('.text-area-container', function() {
-                textarea('.answer_2', {
-                  maxlength: 140,
-                  placeholder: 'Put answer two here',
-                  required: true
-                });
-                div('.resizer answer_2', function() {
-                  return 'A';
-                });
-                return div('.characters', function() {
-                  return '';
-                });
-              });
-            });
-            return input({
-              type: 'submit',
-              value: 'submit'
             });
           });
         });
       }));
       (function($new_question) {
-        $questions.append($new_question);
+        $questions.prepend($new_question);
+        console.log($new_question.find('.open-pop, .close'));
+        $new_question.find('.open-pop, .close').on('click', function() {
+          return $new_question.find('.modalDialog').toggleClass('visible');
+        });
         $new_question.find('textarea').on('input', function(e) {
-          var $el, maxlength;
+          var $el, maxlength, str;
           $el = $(e.currentTarget);
-          $el.next().html("" + ($el.val() || 'A') + "\n\n");
-          maxlength = $el.attr('maxlength');
-          return $el.siblings('.characters').html(maxlength - $el.val().length);
+          maxlength = $el.attr('data-maxlength');
+          str = $el.val().slice(0, maxlength);
+          $el.val(str);
+          if (str.length === 0) {
+            $el.next().html("");
+            $el.siblings('.characters').html('');
+          } else {
+            $el.next().html("" + str + "\n\n");
+            $el.siblings('.characters').html(maxlength - str.length);
+          }
+          return false;
         });
         return $new_question.find('form').on('submit', function(e) {
-          var $el, new_q;
+          var $el, answer, c, new_q, new_q_obj, opt, _i;
           if (!link) {
             link = "leaf/" + (ref.child('leaf').push().key());
           }
           $el = $(e.currentTarget);
           new_q = ref.child(link).push();
-          new_q.set({
+          new_q_obj = {
             answer_1: {
               text: $el.find('textarea.answer_1').val()
             },
-            answer_2: {
-              text: $el.find('textarea.answer_2').val()
-            },
-            question: $el.find('textarea.question-header').val(),
+            question: $el.find('textarea.question-body').val(),
+            title: $el.find('textarea.question-title').val(),
             created: Firebase.ServerValue.TIMESTAMP,
             vote: 0,
             vote_inverse: 0
-          }, function() {
+          };
+          c = 2;
+          for (opt = _i = 2; _i <= 4; opt = ++_i) {
+            answer = $el.find("textarea.answer_" + opt).val();
+            if (!answer) {
+              continue;
+            }
+            new_q_obj["answer_" + c] = {
+              text: answer
+            };
+            c++;
+          }
+          debugger;
+          new_q.set(new_q_obj, function() {
             var question_location;
             if (!previous) {
               return renderQuestion(link, previous);

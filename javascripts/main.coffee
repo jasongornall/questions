@@ -64,6 +64,7 @@ ref.authAnonymously (err, data) ->
       renderQuestion $el.data 'subject'
       updateUrl {'s': $el.data 'subject'}
 
+  renderNewQuestionPopup = ->
 
   renderQuestion = (link = "fun", previous = false) ->
 
@@ -87,8 +88,8 @@ ref.authAnonymously (err, data) ->
     getNextQ (doc) ->
       if doc isnt null
         doc.forEach (child_doc) ->
-          {question, answer_1, answer_2, vote} = child_doc?.val() or {}
-          return false unless question and answer_1 and answer_2
+          {question, vote, title} = child_doc?.val() or {}
+          return false unless question and title
           item = localStorage.getItem(child_doc.key()) or {}
           $question = $ teacup.render ->
             div '.question', 'data-key': child_doc.key(), ->
@@ -96,10 +97,14 @@ ref.authAnonymously (err, data) ->
                 div 'data-arrow':'up'
                 div ".vote", ->
                 div 'data-arrow':'down'
-              div '.question-header', -> question
+              div '.question-title', -> title
+              div '.question-body', -> question
               div '.answers', ->
-                div '.answer_1', 'data-next': answer_1.next, -> answer_1.text
-                div '.answer_2', 'data-next': answer_2.next, -> answer_2.text
+                for opt in [1..4]
+                  ans = child_doc.child("answer_#{opt}").val()
+                  continue unless ans
+                  div ->
+                    span ".answer_#{opt}.text", 'data-next': ans.next, -> ans.text
           $questions.append $question
           do ($question) ->
             $question.find('[data-arrow]').on 'click', (e) ->
@@ -134,7 +139,6 @@ ref.authAnonymously (err, data) ->
               $vote.toggleClass 'good', new_vote > 5
 
               item = JSON.parse localStorage.getItem(child_doc.key()) or '{}'
-              debugger;
               local_vote = 'none'
               if item.vote > 0
                 local_vote = 'up'
@@ -143,7 +147,7 @@ ref.authAnonymously (err, data) ->
               $question.attr 'data-vote', local_vote
 
 
-            $question.find('.answers > div').on 'click', (e) ->
+            $question.find('.answers .text').on 'click', (e) ->
               $el = $ e.currentTarget
               next = $el.data('next')
               key = $el.closest('.question').data 'key'
@@ -156,45 +160,73 @@ ref.authAnonymously (err, data) ->
 
       $new_question = $ teacup.render ->
         div '.question', ->
-          form ->
-            div '.text-area-container', ->
-              textarea '.question-header', maxlength: 250, placeholder: "Add your own question", required: true
-              div '.resizer question-header', -> 'A'
-              div '.characters', -> ''
-            div '.answers', ->
-              div '.text-area-container', ->
-                textarea '.answer_1',maxlength: 140, placeholder: 'Put answer one here', required: true
-                div '.resizer answer_1', -> 'A'
-                div '.characters', -> ''
-              div '.text-area-container', ->
-                textarea '.answer_2', maxlength: 140, placeholder: 'Put answer two here', required: true
-                div '.resizer answer_2', -> 'A'
-                div '.characters', -> ''
-            input type:'submit', value: 'submit'
+          div '.open-pop', -> 'Post Something Original'
+          div '.modalDialog', ->
+            div '.new-question', ->
+              h3 -> 'Submitting a new Post'
+              span class: 'close', -> 'X'
+              form ->
+                div '.text-area-container', ->
+                  textarea '.question-title', 'data-maxlength': 120, placeholder: "Add title", required: true
+                  div '.resizer question-body', -> 'A'
+                  div '.characters', -> ''
+                div '.text-area-container', ->
+                  textarea '.question-body', 'data-maxlength': 250, placeholder: "Add your body", required: true
+                  div '.resizer question-body', -> 'A'
+                  div '.characters', -> ''
+                div '.answers', ->
+                  for opt in [1..4]
+                    div '.text-area-container', ->
+                      required = opt is 1
+                      placeholder = if required then 'Put choice here' else 'Put (optional) choice here'
+                      textarea ".answer_#{opt}", 'data-maxlength': 140, placeholder: placeholder, required: required
+                      div '.resizer', -> 'A'
+                      div '.characters', -> ''
+                input type:'submit', value: 'submit'
       do ($new_question) ->
-        $questions.append $new_question
-
+        $questions.prepend $new_question
+        console.log $new_question.find('.open-pop, .close')
+        $new_question.find('.open-pop, .close').on 'click', ->
+          $new_question.find('.modalDialog').toggleClass 'visible'
         $new_question.find('textarea').on 'input', (e) ->
           $el = $ e.currentTarget
-          $el.next().html "#{$el.val() or 'A'}\n\n"
-          maxlength = $el.attr 'maxlength'
-          $el.siblings('.characters').html maxlength - $el.val().length
+          maxlength = $el.attr 'data-maxlength'
+          str = $el.val().slice 0, maxlength
+          $el.val str
+
+          if str.length is 0
+            $el.next().html ""
+            $el.siblings('.characters').html ''
+          else
+            $el.next().html "#{str}\n\n"
+            $el.siblings('.characters').html maxlength - str.length
+          return false
 
         $new_question.find('form').on 'submit', (e) ->
           if not link
             link = "leaf/#{ref.child('leaf').push().key()}"
           $el = $ e.currentTarget
           new_q = ref.child(link).push()
-          new_q.set {
+          new_q_obj = {
             answer_1:
               text: $el.find('textarea.answer_1').val()
-            answer_2:
-              text: $el.find('textarea.answer_2').val()
-            question: $el.find('textarea.question-header').val()
+            question: $el.find('textarea.question-body').val()
+            title: $el.find('textarea.question-title').val()
             created: Firebase.ServerValue.TIMESTAMP
             vote: 0
             vote_inverse: 0
-          }, ->
+          }
+
+          # handle skips
+          c = 2
+          for opt in [2..4]
+            answer = $el.find("textarea.answer_#{opt}").val()
+            continue unless answer
+            new_q_obj["answer_#{c}"] = {text: answer}
+            c++
+
+          debugger
+          new_q.set new_q_obj, ->
             return renderQuestion(link, previous) unless previous
             question_location = "#{link}/#{new_q.key()}"
             ref.child("#{previous}/next").set link, ->
