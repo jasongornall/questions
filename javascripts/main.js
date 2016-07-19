@@ -38,7 +38,7 @@ ref.authAnonymously(function(err, data) {
     var $header, nav_selected, subject_selected, times_selected;
     $header = $('body > .container > .header');
     nav_selected = 'home';
-    subject_selected = 'fun';
+    subject_selected = 'test';
     times_selected = 'all';
     $header.html(teacup.render(function() {
       div('.nav', function() {
@@ -109,38 +109,39 @@ ref.authAnonymously(function(err, data) {
       $el.siblings().attr('data-selected', false);
       $el.attr('data-selected', true);
       $questions = $('body .questions');
-      switch ($el.data('time')) {
-        case 'hour':
-          start_time = Date.now() - 60 * 60 * 1000;
-          end_time = Date.now();
-          break;
-        case 'day':
-          start_time = Date.now() - 24 * 60 * 60 * 1000;
-          end_time = Date.now();
-          break;
-        case 'year':
-          start_time = Date.now() - 365 * 24 * 60 * 60 * 1000;
-          end_time = Date.now();
-          break;
-        case 'all':
-          start_time = 0;
-          end_time = Date.now();
-      }
       return renderQuestion($questions.data('link'), $questions.data('previous'));
     });
   };
   renderLoginPopup = function() {};
   renderQuestion = function(link, previous) {
-    var $questions, getNextQ;
+    var $questions, getNextQ, time;
     if (link == null) {
-      link = "fun";
+      link = "test";
     }
     if (previous == null) {
       previous = false;
     }
+    time = $('body > .container > .header .time').data('time') || 'all';
+    switch (time) {
+      case 'hour':
+        start_time = Date.now() - 60 * 60 * 1000;
+        end_time = Date.now();
+        break;
+      case 'day':
+        start_time = Date.now() - 24 * 60 * 60 * 1000;
+        end_time = Date.now();
+        break;
+      case 'year':
+        start_time = Date.now() - 365 * 24 * 60 * 60 * 1000;
+        end_time = Date.now();
+        break;
+      case 'all':
+        start_time = 0;
+        end_time = Date.now();
+    }
     getNextQ = function(finish) {
       if (link) {
-        return ref.child(link).orderByChild('created').startAt(start_time).endAt(end_time).once('value', function(doc) {
+        return ref.child(link).orderByChild('created').startAt(start_time).endAt(Date.now()).once('value', function(doc) {
           var items, key, new_items, val;
           items = doc.val() || {};
           new_items = [];
@@ -423,6 +424,7 @@ ref.authAnonymously(function(err, data) {
             }
             question_location = "" + link + "/" + (new_q.key());
             return ref.child("" + previous + "/next").set(link, function() {
+              debugger;
               return renderQuestion(link, previous);
             });
           });
@@ -441,5 +443,5 @@ ref.authAnonymously(function(err, data) {
     });
   };
   renderHeader();
-  return renderQuestion($.url('?s') || 'fun');
+  return renderQuestion('test');
 });

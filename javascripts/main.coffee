@@ -24,12 +24,11 @@ start_time = 0
 end_time = Date.now()
 
 ref.authAnonymously (err, data) ->
-
   renderHeader = ->
 
     $header = $('body > .container > .header')
     nav_selected = 'home'
-    subject_selected = 'fun'
+    subject_selected = 'test'
     times_selected = 'all'
 
     $header.html teacup.render ->
@@ -68,29 +67,31 @@ ref.authAnonymously (err, data) ->
       $el.siblings().attr 'data-selected', false
       $el.attr 'data-selected', true
       $questions = $('body .questions')
-      switch $el.data 'time'
-        when 'hour'
-          start_time = Date.now() - 60 * 60 * 1000
-          end_time = Date.now()
-        when 'day'
-          start_time = Date.now() - 24 * 60 * 60 * 1000
-          end_time = Date.now()
-        when 'year'
-          start_time = Date.now() - 365 * 24 * 60 * 60 * 1000
-          end_time = Date.now()
-        when 'all'
-          start_time = 0
-          end_time = Date.now()
-
       renderQuestion $questions.data('link'), $questions.data('previous')
 
   renderLoginPopup = ->
 
-  renderQuestion = (link = "fun", previous = false) ->
+  renderQuestion = (link = "test", previous = false) ->
+
+    # make sure we have the right time
+    time = $('body > .container > .header .time').data('time') or 'all'
+    switch time
+      when 'hour'
+        start_time = Date.now() - 60 * 60 * 1000
+        end_time = Date.now()
+      when 'day'
+        start_time = Date.now() - 24 * 60 * 60 * 1000
+        end_time = Date.now()
+      when 'year'
+        start_time = Date.now() - 365 * 24 * 60 * 60 * 1000
+        end_time = Date.now()
+      when 'all'
+        start_time = 0
+        end_time = Date.now()
 
     getNextQ = (finish) ->
       if link
-        ref.child(link).orderByChild('created').startAt(start_time).endAt(end_time).once 'value', (doc) ->
+        ref.child(link).orderByChild('created').startAt(start_time).endAt(Date.now()).once 'value', (doc) ->
           # get items
           items = doc.val() or {}
 
@@ -271,6 +272,7 @@ ref.authAnonymously (err, data) ->
             return renderQuestion(link, previous) unless previous
             question_location = "#{link}/#{new_q.key()}"
             ref.child("#{previous}/next").set link, ->
+              debugger;
               renderQuestion link, previous
           return false
 
@@ -285,7 +287,7 @@ ref.authAnonymously (err, data) ->
 
 
   renderHeader()
-  renderQuestion $.url('?s') or 'fun'
+  renderQuestion 'test'
 
 
 
