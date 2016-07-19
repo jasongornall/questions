@@ -74,20 +74,16 @@ ref.authAnonymously (err, data) ->
   renderQuestion = (link = "test", previous = false) ->
 
     # make sure we have the right time
-    time = $('body > .container > .header .time').data('time') or 'all'
+    time = $('body > .container > .header .time[data-selected=true]').data('time') or 'all'
     switch time
       when 'hour'
         start_time = Date.now() - 60 * 60 * 1000
-        end_time = Date.now()
       when 'day'
         start_time = Date.now() - 24 * 60 * 60 * 1000
-        end_time = Date.now()
       when 'year'
         start_time = Date.now() - 365 * 24 * 60 * 60 * 1000
-        end_time = Date.now()
       when 'all'
         start_time = 0
-        end_time = Date.now()
 
     getNextQ = (finish) ->
       if link

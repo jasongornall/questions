@@ -121,23 +121,19 @@ ref.authAnonymously(function(err, data) {
     if (previous == null) {
       previous = false;
     }
-    time = $('body > .container > .header .time').data('time') || 'all';
+    time = $('body > .container > .header .time[data-selected=true]').data('time') || 'all';
     switch (time) {
       case 'hour':
         start_time = Date.now() - 60 * 60 * 1000;
-        end_time = Date.now();
         break;
       case 'day':
         start_time = Date.now() - 24 * 60 * 60 * 1000;
-        end_time = Date.now();
         break;
       case 'year':
         start_time = Date.now() - 365 * 24 * 60 * 60 * 1000;
-        end_time = Date.now();
         break;
       case 'all':
         start_time = 0;
-        end_time = Date.now();
     }
     getNextQ = function(finish) {
       if (link) {
