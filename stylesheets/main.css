@@ -62,6 +62,23 @@ body {
 body .container [data-selected="true"] {
   color: #0f0;
 }
+body .container > .header > .times {
+  display: flex;
+  justify-content: center;
+  max-width: 750px;
+  margin: 0 auto;
+  font-size: 12px;
+}
+body .container > .header > .times > .time {
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 10px;
+  background: #151515;
+  padding: 5px;
+}
+body .container > .header > .times > .time[data-selected=true] {
+  background: #2f2f2f;
+}
 body .container > .header > .nav {
   display: flex;
   justify-content: flex-end;
@@ -108,7 +125,7 @@ body .container .questions-container .question {
 body .container .questions-container .question .answers .text {
   display: list-item;
   list-style-position: inside;
-  margin-right: 10px;
+  margin-right: 19.2px;
 }
 body .container .questions-container .question .answers .text:hover {
   cursor: pointer;

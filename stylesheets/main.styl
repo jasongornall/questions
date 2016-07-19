@@ -61,6 +61,20 @@ body
     [data-selected="true"]
       color: #00FF00
     > .header
+      > .times
+        display: flex;
+        justify-content: center;
+        max-width: 750px;
+        margin: 0 auto;
+        font-size: 12px;
+        > .time
+          cursor pointer
+          display: inline-block;
+          margin: 0 10px;
+          background: #151515;
+          padding: 5px;
+          &[data-selected=true]
+            background: lighten(#151515,10);
       > .nav
         display: flex;
         justify-content: flex-end;
@@ -99,7 +113,7 @@ body
         .answers .text
           display list-item
           list-style-position inside
-          margin-right 10px
+          margin-right 19.2px
           &:hover
             cursor pointer
             text-decoration: underline;

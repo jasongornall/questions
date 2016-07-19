@@ -20,20 +20,18 @@ TIMES  = {
   'all': 'all time'
 }
 authedData = null
+start_time = 0
+end_time = Date.now()
 
 ref.authAnonymously (err, data) ->
 
   renderHeader = ->
 
     $header = $('body > .container > .header')
-    nav_selected = $.url('?n') or 'home'
-    subject_selected = $.url('?s') or 'fun'
-    times_selected = $.url('?t') or 'all'
-    updateUrl = (json) ->
-      variables =  $.url('?') or {}
-      variables[key] = val for key, val of json
-      params = ("#{k}=#{encodeURIComponent v}" for k, v of variables).join '&'
-      # history.pushState(null, null, "?#{params}");
+    nav_selected = 'home'
+    subject_selected = 'fun'
+    times_selected = 'all'
+
     $header.html teacup.render ->
       div '.nav', ->
         for key, val of NAV
@@ -47,22 +45,44 @@ ref.authAnonymously (err, data) ->
             subject: key
             selected: "#{key is subject_selected}"
           }, -> val
-      select '.time-slot', ->
+      div '.times', ->
         for key, val of TIMES
-          option value: key, -> val
+          div '.time', 'data': {
+            time: key
+            selected: "#{key is times_selected}"
+          }, -> val
 
     $header.find('.nav-item').on 'click', (e) ->
       $el = $ e.currentTarget
       $el.siblings().attr 'data-selected', false
       $el.attr 'data-selected', true
-      updateUrl {'n': $el.data 'nav'}
 
     $header.find('.subjects .subject').on 'click', (e) ->
       $el = $ e.currentTarget
       $el.siblings().attr 'data-selected', false
       $el.attr 'data-selected', true
       renderQuestion $el.data 'subject'
-      updateUrl {'s': $el.data 'subject'}
+
+    $header.find('.time').on 'click', (e) ->
+      $el = $ e.currentTarget
+      $el.siblings().attr 'data-selected', false
+      $el.attr 'data-selected', true
+      $questions = $('body .questions')
+      switch $el.data 'time'
+        when 'hour'
+          start_time = Date.now() - 60 * 60 * 1000
+          end_time = Date.now()
+        when 'day'
+          start_time = Date.now() - 24 * 60 * 60 * 1000
+          end_time = Date.now()
+        when 'year'
+          start_time = Date.now() - 365 * 24 * 60 * 60 * 1000
+          end_time = Date.now()
+        when 'all'
+          start_time = 0
+          end_time = Date.now()
+
+      renderQuestion $questions.data('link'), $questions.data('previous')
 
   renderLoginPopup = ->
 
@@ -70,8 +90,22 @@ ref.authAnonymously (err, data) ->
 
     getNextQ = (finish) ->
       if link
-        ref.child(link).orderByChild("vote_inverse").once 'value', (doc) ->
-          finish doc
+        ref.child(link).orderByChild('created').startAt(start_time).endAt(end_time).once 'value', (doc) ->
+          # get items
+          items = doc.val() or {}
+
+          # convert to array
+          new_items = []
+          for key, val of items
+            val.key = key
+            new_items.push val
+
+          # sort array by vote
+          new_items = new_items.sort (a, b) ->
+            b.vote - a.vote
+
+          # return new items
+          finish new_items
       else
         finish null
 
@@ -79,19 +113,21 @@ ref.authAnonymously (err, data) ->
       div '.questions'
 
     $questions = $('body .questions')
+    $questions.attr('data-link', link)
+    $questions.attr('data-previous', previous)
     $(window).off 'resize', ->
     $(window).on 'resize', ->
       width = Math.floor $(window).width() / 340
       $('.questions-container').css 'max-width', "#{width * 340}px"
 
-    getNextQ (doc) ->
-      if doc isnt null
-        doc.forEach (child_doc) ->
-          {question, vote, title} = child_doc?.val() or {}
+    getNextQ (new_items) ->
+      if new_items?.length
+        new_items.forEach (child_item) ->
+          {question, vote, title, key} = child_item or {}
           return false unless question and title
-          item = localStorage.getItem(child_doc.key()) or {}
+          item = localStorage.getItem(key) or {}
           $question = $ teacup.render ->
-            div '.question', 'data-key': child_doc.key(), ->
+            div '.question', 'data-key': key, ->
               div '.voting', ->
                 div 'data-arrow':'up'
                 div ".vote", ->
@@ -101,7 +137,7 @@ ref.authAnonymously (err, data) ->
               flag = true
               div '.answers', ->
                 for opt in [1..4]
-                  ans = child_doc.child("answer_#{opt}").val()
+                  ans = child_item["answer_#{opt}"]
                   continue unless ans
                   div ->
                     span '.text', data: {
@@ -110,14 +146,14 @@ ref.authAnonymously (err, data) ->
                     }, -> ans.text
                   flag = flag and ans.next
               if not flag
-                div '.asterisk', -> 'has no children'
+                div '.asterisk', -> 'dead end'
 
           $questions.append $question
           do ($question) ->
             $question.find('[data-arrow]').on 'click', (e) ->
               $el = $ e.currentTarget
               incriment = if $el.data('arrow') is 'up' then 1 else -1
-              item = JSON.parse localStorage.getItem(child_doc.key()) or '{}'
+              item = JSON.parse localStorage.getItem(key) or '{}'
               modified_incriment = incriment
               if item.vote is incriment
                 modified_incriment = incriment * -1
@@ -129,22 +165,22 @@ ref.authAnonymously (err, data) ->
 
               # stupid yes but firebase doesn't support reverse order
               item.vote_inverse = incriment * -1
-              localStorage.setItem child_doc.key(), JSON.stringify item
+              localStorage.setItem key, JSON.stringify item
 
-              ref.child("#{link}/#{child_doc.key()}/vote").once 'value', (current_vote_doc) ->
+              ref.child("#{link}/#{key}/vote").once 'value', (current_vote_doc) ->
                 currentVote = current_vote_doc?.val() or 0
                 new_val = currentVote + modified_incriment
-                ref.child("#{link}/#{child_doc.key()}/vote").set new_val
-                ref.child("#{link}/#{child_doc.key()}/vote_inverse").set new_val * -1
+                ref.child("#{link}/#{key}/vote").set new_val
+                ref.child("#{link}/#{key}/vote_inverse").set new_val * -1
 
-            ref.child("#{link}/#{child_doc.key()}/vote").on 'value', (vote_doc) ->
+            ref.child("#{link}/#{key}/vote").on 'value', (vote_doc) ->
               new_vote = vote_doc?.val() or 0
               $vote = $question.find('.vote')
               $vote.html "#{new_vote}"
               $vote.toggleClass 'bad', new_vote < 0
               $vote.toggleClass 'good', new_vote > 5
 
-              item = JSON.parse localStorage.getItem(child_doc.key()) or '{}'
+              item = JSON.parse localStorage.getItem(key) or '{}'
               local_vote = 'none'
               if item.vote > 0
                 local_vote = 'up'
@@ -166,7 +202,7 @@ ref.authAnonymously (err, data) ->
 
       $new_question = $ teacup.render ->
         div '.question', ->
-          div '.open-pop', -> 'Post Something Original'
+          div '.open-pop', -> if previous then 'add branch at this point' else 'Create new story'
           div '.modalDialog', ->
             div '.new-question', ->
               h3 -> 'Submitting a new Post'
