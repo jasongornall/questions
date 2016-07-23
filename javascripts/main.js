@@ -154,7 +154,7 @@ ref.authAnonymously(function(err, data) {
               continue;
             }
             div(function() {
-              return span('.text', {
+              span('.text', {
                 data: {
                   answer: "answer_" + opt,
                   next: ans.next,
@@ -162,6 +162,9 @@ ref.authAnonymously(function(err, data) {
                 }
               }, function() {
                 return ans.text;
+              });
+              return span('.count', function() {
+                return "" + (ans.count || 0);
               });
             });
             _results.push(flag = flag && ans.next);
@@ -292,19 +295,38 @@ ref.authAnonymously(function(err, data) {
               next = $el.data('next');
               key = $el.closest('.question').data('key');
               key_previous = "" + link + "/" + key + "/" + ($el.data('answer'));
-              ref.child("" + key_previous + "/count").transaction(function(currentCount) {
+              return ref.child("" + key_previous + "/count").transaction((function(currentCount) {
                 if (currentCount == null) {
                   currentCount = 0;
                 }
                 return currentCount + 1;
+              }), function(error, committed, ss) {
+                if (err) {
+                  return;
+                }
+                if (!committed) {
+                  return;
+                }
+                child_item.answer = $el.data('answer');
+                child_item[child_item.answer].count = ss.val();
+                past_questions.unshift(child_item);
+                return renderQuestion(next, key_previous);
               });
-              child_item.answer = $el.data('answer');
-              past_questions.unshift(child_item);
-              return renderQuestion(next, key_previous);
             });
             return false;
           })($question);
         });
+      } else {
+        $questions.append($(teacup.render(function() {
+          return div('.question', function() {
+            i(".material-icons.animate", function() {
+              return 'navigate_before';
+            });
+            return span(function() {
+              return 'click here to keep the branch going';
+            });
+          });
+        })));
       }
       $new_question = $(teacup.render(function() {
         return div('.question', function() {
@@ -320,7 +342,7 @@ ref.authAnonymously(function(err, data) {
               'data-count': 0
             }, function() {
               div('.topic', function() {
-                return 'You are now in a story';
+                return 'previous answers';
               });
               div('.options', function() {
                 i(".material-icons.back", {
@@ -329,7 +351,7 @@ ref.authAnonymously(function(err, data) {
                   return 'navigate_before';
                 });
                 span('.jump', function() {
-                  return 'jump back';
+                  return 'jump here';
                 });
                 return i('.material-icons.next', {
                   'data-disabled': "true"
@@ -413,8 +435,7 @@ ref.authAnonymously(function(err, data) {
       }));
       (function($new_question) {
         $questions.prepend($new_question);
-        console.log($new_question.find('.open-pop, .close'));
-        $new_question.find('.open-pop, .close').on('click', function() {
+        $questions.find('.open-pop, .close').on('click', function() {
           return $new_question.find('.modalDialog').toggleClass('visible');
         });
         $new_question.find('.options .jump').on('click', function(e) {

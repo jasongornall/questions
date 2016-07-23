@@ -134,6 +134,8 @@ body .container .questions-container .question .past {
 body .container .questions-container .question .past .old-questions {
   padding: 20px;
   text-align: left;
+  border: 1px dashed rgba(255,255,255,0.2);
+  margin-top: 20px;
 }
 body .container .questions-container .question .past .old-question {
   position: relative;
@@ -142,8 +144,12 @@ body .container .questions-container .question .past .old-question [data-answer]
   opacity: 0.2;
 }
 body .container .questions-container .question .past .old-question [data-answer][data-selected] {
-  opacity: 1;
+  opacity: 0.5;
   text-decoration: underline;
+}
+body .container .questions-container .question .past .old-question .question-title,
+body .container .questions-container .question .past .old-question .question-body {
+  opacity: 0.5;
 }
 body .container .questions-container .question .past > .options {
   padding-top: 20px;
@@ -168,7 +174,7 @@ body .container .questions-container .question .past > .options > i[data-disable
 body .container .questions-container .question .answers .text {
   display: list-item;
   list-style-position: inside;
-  margin-right: 19.2px;
+  text-indent: 2em;
 }
 body .container .questions-container .question > .answers .text:hover {
   cursor: pointer;
@@ -177,6 +183,15 @@ body .container .questions-container .question > .answers .text:hover {
 body .container .questions-container .question > .answers .text:not([data-next^='leaf']):after {
   content: " *";
   color: #f00;
+}
+body .container .questions-container .question .answers > div {
+  position: relative;
+}
+body .container .questions-container .question .answers .count {
+  position: absolute;
+  left: 0;
+  opacity: 0.2;
+  top: 0;
 }
 body .container .questions-container .question .asterisk {
   font-size: 12px;

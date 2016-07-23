@@ -51,9 +51,6 @@ ref.authAnonymously (err, data) ->
             selected: "#{key is times_selected}"
           }, -> val
 
-
-
-
     $header.find('.nav-item').on 'click', (e) ->
       $el = $ e.currentTarget
       $el.siblings().attr 'data-selected', false
@@ -95,6 +92,7 @@ ref.authAnonymously (err, data) ->
                 next: ans.next
                 selected: answer is "answer_#{opt}"
               }, -> ans.text
+              span '.count', -> "#{ans.count or 0}"
             flag = flag and ans.next
         if not flag and not answer
           div '.asterisk', -> 'dead end'
@@ -194,30 +192,38 @@ ref.authAnonymously (err, data) ->
                 local_vote = 'down'
               $question.attr 'data-vote', local_vote
 
-
             $question.find('.answers .text').on 'click', (e) ->
               $el = $ e.currentTarget
               next = $el.data('next')
               key = $el.closest('.question').data 'key'
               key_previous = "#{link}/#{key}/#{$el.data('answer')}"
-              ref.child("#{key_previous}/count").transaction (currentCount) ->
+              ref.child("#{key_previous}/count").transaction ((currentCount) ->
                 currentCount ?= 0
                 return currentCount + 1
-              child_item.answer = $el.data 'answer'
-              past_questions.unshift child_item
-              renderQuestion next, key_previous
+              ), (error, committed, ss) ->
+                return if err
+                return if not committed
+                child_item.answer = $el.data 'answer'
+                child_item[child_item.answer].count = ss.val()
+                past_questions.unshift child_item
+                renderQuestion next, key_previous
             return false
 
+      else
+        $questions.append $ teacup.render ->
+          div '.question', ->
+            i ".material-icons.animate", -> 'navigate_before'
+            span -> 'click here to keep the branch going'
       $new_question = $ teacup.render ->
         div '.question', ->
           div '.open-pop', -> if previous then 'add branch at this point' else 'Create new story'
           if previous
             div '.past', 'data-count': 0, ->
-              div '.topic', -> 'You are now in a story'
+              div '.topic', -> 'previous answers'
               div '.options', ->
                 i ".material-icons.back", 'data-disabled': "#{past_questions.length is 1}", ->
                  'navigate_before'
-                span '.jump', -> 'jump back'
+                span '.jump', -> 'jump here'
                 i '.material-icons.next', 'data-disabled': "true", -> 'navigate_next'
               div '.old-questions', ->
                 raw questionHtml past_questions[0], '.old-question'
@@ -245,8 +251,8 @@ ref.authAnonymously (err, data) ->
                 input type:'submit', value: 'submit'
       do ($new_question) ->
         $questions.prepend $new_question
-        console.log $new_question.find('.open-pop, .close')
-        $new_question.find('.open-pop, .close').on 'click', ->
+
+        $questions.find('.open-pop, .close').on 'click', ->
           $new_question.find('.modalDialog').toggleClass 'visible'
 
         $new_question.find('.options .jump').on 'click', (e) ->

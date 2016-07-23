@@ -119,13 +119,18 @@ body
           .old-questions
             padding 20px
             text-align left
+            border: 1px dashed rgba(white,.2);
+            margin-top: 20px;
           .old-question
             position relative
             [data-answer]
               opacity .2
               &[data-selected]
-                opacity 1.0
+                opacity .5
                 text-decoration: underline;
+            .question-title, .question-body
+              opacity .5
+
 
           > .options
             padding-top 20px
@@ -145,7 +150,7 @@ body
         .answers .text
           display list-item
           list-style-position inside
-          margin-right 19.2px
+          text-indent 2em
         > .answers .text
           &:hover
             cursor pointer
@@ -153,6 +158,15 @@ body
           &:not([data-next^='leaf']):after
             content: " *"
             color red
+        .answers
+          > div
+            position relative
+          .count
+            position absolute
+            left 0
+            opacity .2
+            top 0
+
         .asterisk
           font-size: 12px;
           margin-top: 20px;
