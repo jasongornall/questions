@@ -73,10 +73,10 @@ ref.authAnonymously (err, data) ->
       renderQuestion $questions.data('link'), $questions.data('previous')
 
   questionHtml = (data, wrapper = '.question') ->
-    {question, vote, title, key, answer} = data or {}
+    {question, vote, title, key, answer, link} = data or {}
     item = localStorage.getItem(key) or {}
     return teacup.render ->
-      div wrapper, 'data-key': key, ->
+      div wrapper, 'data-key': key, 'data-link': link, ->
         if not answer
           div '.voting', ->
             div 'data-arrow':'up'
@@ -123,6 +123,7 @@ ref.authAnonymously (err, data) ->
           new_items = []
           for key, val of items
             val.key = key
+            val.link = link
             new_items.push val
 
           # sort array by vote
@@ -211,11 +212,12 @@ ref.authAnonymously (err, data) ->
         div '.question', ->
           div '.open-pop', -> if previous then 'add branch at this point' else 'Create new story'
           if previous
-            div '.past', 'data-count':0, ->
+            div '.past', 'data-count': 0, ->
               div '.topic', -> 'You are now in a story'
               div '.options', ->
                 i ".material-icons.back", 'data-disabled': "#{past_questions.length is 1}", ->
                  'navigate_before'
+                span '.jump', -> 'jump back'
                 i '.material-icons.next', 'data-disabled': "true", -> 'navigate_next'
               div '.old-questions', ->
                 raw questionHtml past_questions[0], '.old-question'
@@ -246,6 +248,19 @@ ref.authAnonymously (err, data) ->
         console.log $new_question.find('.open-pop, .close')
         $new_question.find('.open-pop, .close').on 'click', ->
           $new_question.find('.modalDialog').toggleClass 'visible'
+
+        $new_question.find('.options .jump').on 'click', (e) ->
+          $el = $ e.currentTarget
+          index = $el.closest('.past').data 'count'
+          previous = false
+          if past_questions[index+1]
+            {key, link, answer} =  past_questions[index+1]
+            key_previous = "#{link}/#{key}/#{answer}}"
+
+          old_link = past_questions[index].link
+
+          past_questions.splice(0, index + 1)
+          renderQuestion old_link, key_previous
 
         $new_question.find('.options .back, .options .next').on 'click', (e) ->
           $el = $ e.currentTarget

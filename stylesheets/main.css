@@ -131,6 +131,10 @@ body .container .questions-container .question .past {
   margin-top: 20px;
   border-top: 1px #fff dashed;
 }
+body .container .questions-container .question .past .old-questions {
+  padding: 20px;
+  text-align: left;
+}
 body .container .questions-container .question .past .old-question {
   position: relative;
 }
@@ -142,6 +146,7 @@ body .container .questions-container .question .past .old-question [data-answer]
   text-decoration: underline;
 }
 body .container .questions-container .question .past > .options {
+  padding-top: 20px;
   display: flex;
   justify-content: space-around;
 }

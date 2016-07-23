@@ -115,15 +115,16 @@ ref.authAnonymously(function(err, data) {
     });
   };
   questionHtml = function(data, wrapper) {
-    var answer, item, key, question, title, vote, _ref;
+    var answer, item, key, link, question, title, vote, _ref;
     if (wrapper == null) {
       wrapper = '.question';
     }
-    _ref = data || {}, question = _ref.question, vote = _ref.vote, title = _ref.title, key = _ref.key, answer = _ref.answer;
+    _ref = data || {}, question = _ref.question, vote = _ref.vote, title = _ref.title, key = _ref.key, answer = _ref.answer, link = _ref.link;
     item = localStorage.getItem(key) || {};
     return teacup.render(function() {
       return div(wrapper, {
-        'data-key': key
+        'data-key': key,
+        'data-link': link
       }, function() {
         var flag;
         if (!answer) {
@@ -209,6 +210,7 @@ ref.authAnonymously(function(err, data) {
           for (key in items) {
             val = items[key];
             val.key = key;
+            val.link = link;
             new_items.push(val);
           }
           new_items = new_items.sort(function(a, b) {
@@ -326,6 +328,9 @@ ref.authAnonymously(function(err, data) {
                 }, function() {
                   return 'navigate_before';
                 });
+                span('.jump', function() {
+                  return 'jump back';
+                });
                 return i('.material-icons.next', {
                   'data-disabled': "true"
                 }, function() {
@@ -411,6 +416,19 @@ ref.authAnonymously(function(err, data) {
         console.log($new_question.find('.open-pop, .close'));
         $new_question.find('.open-pop, .close').on('click', function() {
           return $new_question.find('.modalDialog').toggleClass('visible');
+        });
+        $new_question.find('.options .jump').on('click', function(e) {
+          var $el, answer, index, key, key_previous, old_link, _ref;
+          $el = $(e.currentTarget);
+          index = $el.closest('.past').data('count');
+          previous = false;
+          if (past_questions[index + 1]) {
+            _ref = past_questions[index + 1], key = _ref.key, link = _ref.link, answer = _ref.answer;
+            key_previous = "" + link + "/" + key + "/" + answer + "}";
+          }
+          old_link = past_questions[index].link;
+          past_questions.splice(0, index + 1);
+          return renderQuestion(old_link, key_previous);
         });
         $new_question.find('.options .back, .options .next').on('click', function(e) {
           var $el, $old_q, $past, index, new_index;
