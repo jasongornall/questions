@@ -318,12 +318,9 @@ ref.authAnonymously(function(err, data) {
         });
       } else {
         $questions.append($(teacup.render(function() {
-          return div('.question', function() {
-            i(".material-icons.animate", function() {
-              return 'navigate_before';
-            });
+          return div('.question.no-border', function() {
             return span(function() {
-              return 'Oops looks like the end of the road, click here to add your own content';
+              return 'Oops looks like the end of the road, no content yet.. click the box to add some!';
             });
           });
         })));

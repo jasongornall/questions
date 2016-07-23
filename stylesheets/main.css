@@ -133,6 +133,9 @@ body .container .questions-container .question {
   white-space: pre-wrap;
   width: 300px;
 }
+body .container .questions-container .question.no-border {
+  border: none;
+}
 body .container .questions-container .question .past {
   text-align: center;
   padding-top: 20px;
