@@ -17,6 +17,7 @@
   text-align: center;
   top: 0;
   line-height: 40px;
+  font-size: 11px;
 }
 .voting [data-arrow="down"] {
   -moz-border-radius: 0 0 30px 30px;
@@ -25,15 +26,15 @@
   height: 15px;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
-  border: 5px solid transparent;
-  border-top: 0;
+  border: 5px solid #f00;
   cursor: pointer;
   position: relative;
   z-index: 2;
+  opacity: 0.2;
+  border-top: 0;
 }
 .voting [data-arrow="down"]:hover {
-  border: 5px solid #f00;
-  border-top: 0;
+  opacity: 1;
 }
 .voting [data-arrow="up"] {
   -moz-border-radius: 30px 30px 0 0;
@@ -42,15 +43,15 @@
   height: 15px;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
-  border: 5px solid transparent;
-  border-top: 0;
+  border: 5px solid #008000;
   cursor: pointer;
   position: relative;
   z-index: 2;
+  opacity: 0.2;
+  border-bottom: 0;
 }
 .voting [data-arrow="up"]:hover {
-  border: 5px solid #008000;
-  border-bottom: 0;
+  opacity: 1;
 }
 body {
   text-align: center;
@@ -202,12 +203,10 @@ body .container .questions-container .question .asterisk:before {
   color: #f00;
 }
 body .container .questions-container .question[data-vote="up"] [data-arrow="up"] {
-  border: 5px solid #008000;
-  border-bottom: 0;
+  opacity: 1;
 }
 body .container .questions-container .question[data-vote="down"] [data-arrow="down"] {
-  border: 5px solid #f00;
-  border-top: 0;
+  opacity: 1;
 }
 body .container .questions-container .question .open-pop {
   text-align: center;

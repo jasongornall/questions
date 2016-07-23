@@ -323,7 +323,7 @@ ref.authAnonymously(function(err, data) {
               return 'navigate_before';
             });
             return span(function() {
-              return 'click here to keep the branch going';
+              return 'Oops looks like the end of the road, click here to add your own content';
             });
           });
         })));

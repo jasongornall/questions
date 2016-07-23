@@ -213,7 +213,8 @@ ref.authAnonymously (err, data) ->
         $questions.append $ teacup.render ->
           div '.question', ->
             i ".material-icons.animate", -> 'navigate_before'
-            span -> 'click here to keep the branch going'
+            span -> 'Oops looks like the end of the road,
+            click here to add your own content'
       $new_question = $ teacup.render ->
         div '.question', ->
           div '.open-pop', -> if previous then 'add branch at this point' else 'Create new story'
