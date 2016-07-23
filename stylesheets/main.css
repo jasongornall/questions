@@ -150,12 +150,20 @@ body .container .questions-container .question .past > .options {
   display: flex;
   justify-content: space-around;
 }
+body .container .questions-container .question .past > .options .jump {
+  color: #09fbfc;
+  cursor: pointer;
+}
+body .container .questions-container .question .past > .options .jump:hover {
+  text-decoration: underline;
+}
 body .container .questions-container .question .past > .options > i {
   color: #ff0;
   cursor: pointer;
 }
 body .container .questions-container .question .past > .options > i[data-disabled="true"] {
   color: #808080;
+  cursor: default;
 }
 body .container .questions-container .question .answers .text {
   display: list-item;

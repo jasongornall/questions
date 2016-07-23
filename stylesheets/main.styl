@@ -131,11 +131,17 @@ body
             padding-top 20px
             display: flex;
             justify-content: space-around;
+            .jump
+              color #09FBFC
+              cursor pointer
+              &:hover
+                text-decoration: underline;
             > i
               color yellow
               cursor pointer
             > i[data-disabled="true"]
               color gray
+              cursor default
         .answers .text
           display list-item
           list-style-position inside
