@@ -59,7 +59,6 @@ body {
   padding: 0;
   background: #151515 url("../images/bkg.png") 0 0;
   color: #eaeaea;
-  font: 16px;
   line-height: 1.5;
   font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 }
@@ -106,7 +105,7 @@ body .container > .header > .subjects {
   overflow: hidden;
 }
 body .container > .header > .subjects .subject {
-  padding: 0 20px;
+  padding: 0 15px;
 }
 body .container > .header > .subjects .subject:hover {
   cursor: pointer;
