@@ -22,7 +22,7 @@ TIMES  = {
 authedData = null
 start_time = 0
 end_time = Date.now()
-
+past_questions = []
 ref.authAnonymously (err, data) ->
   renderHeader = ->
 
@@ -51,6 +51,9 @@ ref.authAnonymously (err, data) ->
             selected: "#{key is times_selected}"
           }, -> val
 
+
+
+
     $header.find('.nav-item').on 'click', (e) ->
       $el = $ e.currentTarget
       $el.siblings().attr 'data-selected', false
@@ -69,9 +72,34 @@ ref.authAnonymously (err, data) ->
       $questions = $('body .questions')
       renderQuestion $questions.data('link'), $questions.data('previous')
 
-  renderLoginPopup = ->
-
+  questionHtml = (data, wrapper = '.question') ->
+    {question, vote, title, key, answer} = data or {}
+    item = localStorage.getItem(key) or {}
+    return teacup.render ->
+      div wrapper, 'data-key': key, ->
+        if not answer
+          div '.voting', ->
+            div 'data-arrow':'up'
+            div ".vote", ->
+            div 'data-arrow':'down'
+        div '.question-title', -> title
+        div '.question-body', -> question
+        flag = true
+        div '.answers', ->
+          for opt in [1..4]
+            ans = data["answer_#{opt}"]
+            continue unless ans
+            div ->
+              span '.text', data: {
+                answer: "answer_#{opt}"
+                next: ans.next
+                selected: answer is "answer_#{opt}"
+              }, -> ans.text
+            flag = flag and ans.next
+        if not flag and not answer
+          div '.asterisk', -> 'dead end'
   renderQuestion = (link = "test", previous = false) ->
+    past_questions = [] unless previous
 
     # make sure we have the right time
     time = $('body > .container > .header .time[data-selected=true]').data('time') or 'all'
@@ -123,27 +151,7 @@ ref.authAnonymously (err, data) ->
           {question, vote, title, key} = child_item or {}
           return false unless question and title
           item = localStorage.getItem(key) or {}
-          $question = $ teacup.render ->
-            div '.question', 'data-key': key, ->
-              div '.voting', ->
-                div 'data-arrow':'up'
-                div ".vote", ->
-                div 'data-arrow':'down'
-              div '.question-title', -> title
-              div '.question-body', -> question
-              flag = true
-              div '.answers', ->
-                for opt in [1..4]
-                  ans = child_item["answer_#{opt}"]
-                  continue unless ans
-                  div ->
-                    span '.text', data: {
-                      answer: "answer_#{opt}"
-                      next: ans.next
-                    }, -> ans.text
-                  flag = flag and ans.next
-              if not flag
-                div '.asterisk', -> 'dead end'
+          $question = $ questionHtml child_item
 
           $questions.append $question
           do ($question) ->
@@ -194,12 +202,23 @@ ref.authAnonymously (err, data) ->
               ref.child("#{key_previous}/count").transaction (currentCount) ->
                 currentCount ?= 0
                 return currentCount + 1
+              child_item.answer = $el.data 'answer'
+              past_questions.unshift child_item
               renderQuestion next, key_previous
             return false
 
       $new_question = $ teacup.render ->
         div '.question', ->
           div '.open-pop', -> if previous then 'add branch at this point' else 'Create new story'
+          if previous
+            div '.past', 'data-count':0, ->
+              div '.topic', -> 'You are now in a story'
+              div '.options', ->
+                i ".material-icons.back", 'data-disabled': "#{past_questions.length is 1}", ->
+                 'navigate_before'
+                i '.material-icons.next', 'data-disabled': "true", -> 'navigate_next'
+              div '.old-questions', ->
+                raw questionHtml past_questions[0], '.old-question'
           div '.modalDialog', ->
             div '.new-question', ->
               h3 -> 'Submitting a new Post'
@@ -227,6 +246,23 @@ ref.authAnonymously (err, data) ->
         console.log $new_question.find('.open-pop, .close')
         $new_question.find('.open-pop, .close').on 'click', ->
           $new_question.find('.modalDialog').toggleClass 'visible'
+
+        $new_question.find('.options .back, .options .next').on 'click', (e) ->
+          $el = $ e.currentTarget
+          $past = $el.closest('.past')
+          return if $el.attr('data-disabled') is 'true'
+
+          index = $el.closest('.past').data 'count'
+
+          new_index = index + if $el.hasClass('back') then 1 else -1
+
+          $el.closest('.past').data 'count', new_index
+          $old_q = $past.find('.old-questions')
+          $past.find('.back').attr('data-disabled', "#{not Boolean past_questions[new_index + 1]}")
+          $past.find('.next').attr('data-disabled', "#{not Boolean past_questions[new_index - 1]}")
+          $old_q.html questionHtml past_questions[new_index], '.old-question'
+          window.msnry.masonry()
+
         $new_question.find('textarea').on 'input', (e) ->
           $el = $ e.currentTarget
           maxlength = $el.attr 'data-maxlength'
@@ -272,13 +308,17 @@ ref.authAnonymously (err, data) ->
               renderQuestion link, previous
           return false
 
-      $('.questions').masonry {
+
+
+
+
+      window.msnry = $('.questions').masonry {
         itemSelector: '.question'
         layoutPriorities:
           upperPosition: 1
           shelfOrder: 1
       }
-      msnry = $('.questions').data 'masonry'
+      $('.questions').data 'masonry'
       $(window).trigger('resize')
 
 

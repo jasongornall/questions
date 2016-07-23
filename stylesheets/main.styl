@@ -1,4 +1,5 @@
-
+.material-icons
+  vertical-align: bottom;
 .voting
   position: absolute;
   background: #151515 url("../images/bkg.png") 0 0;
@@ -110,10 +111,32 @@ body
         word-wrap: break-word;
         white-space: pre-wrap;
         width 300px
+        .past
+          text-align center
+          padding-top 20px
+          margin-top 20px
+          border-top: 1px white dashed;
+          .old-question
+            position relative
+            [data-answer]
+              opacity .2
+              &[data-selected]
+                opacity 1.0
+                text-decoration: underline;
+
+          > .options
+            display: flex;
+            justify-content: space-around;
+            > i
+              color yellow
+              cursor pointer
+            > i[data-disabled="true"]
+              color gray
         .answers .text
           display list-item
           list-style-position inside
           margin-right 19.2px
+        > .answers .text
           &:hover
             cursor pointer
             text-decoration: underline;
