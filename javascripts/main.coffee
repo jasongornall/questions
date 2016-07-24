@@ -2,8 +2,7 @@ msnry = null
 ref = new Firebase "https://question-everything.firebaseio.com"
 
 NAV = {
-  'faq': 'faq'
-  'graph': 'view graph'
+
 }
 SUBJECTS = {
   'fun': 'Fun'
@@ -298,6 +297,7 @@ ref.authAnonymously (err, data) ->
           if not link
             link = "leaf/#{ref.child('leaf').push().key()}"
           $el = $ e.currentTarget
+          debugger
           new_q = ref.child(link).push()
           new_q_obj = {
             answer_1:
@@ -317,6 +317,7 @@ ref.authAnonymously (err, data) ->
             new_q_obj["answer_#{c}"] = {text: answer}
             c++
 
+          debugger;
           new_q.set new_q_obj, ->
             return renderQuestion(link, previous) unless previous
             question_location = "#{link}/#{new_q.key()}"

@@ -5,10 +5,7 @@ msnry = null;
 
 ref = new Firebase("https://question-everything.firebaseio.com");
 
-NAV = {
-  'faq': 'faq',
-  'graph': 'view graph'
-};
+NAV = {};
 
 SUBJECTS = {
   'fun': 'Fun',
@@ -481,6 +478,7 @@ ref.authAnonymously(function(err, data) {
             link = "leaf/" + (ref.child('leaf').push().key());
           }
           $el = $(e.currentTarget);
+          debugger;
           new_q = ref.child(link).push();
           new_q_obj = {
             answer_1: {
@@ -503,6 +501,7 @@ ref.authAnonymously(function(err, data) {
             };
             c++;
           }
+          debugger;
           new_q.set(new_q_obj, function() {
             var question_location;
             if (!previous) {
