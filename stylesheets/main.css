@@ -79,6 +79,7 @@ body .container > .header > .times {
   max-width: 750px;
   margin: 0 auto;
   font-size: 12px;
+  padding: 10px 0;
 }
 body .container > .header > .times > .time {
   cursor: pointer;
@@ -139,6 +140,7 @@ body .container .questions-container .question {
 }
 body .container .questions-container .question.no-border {
   border: none;
+  margin: 0;
 }
 body .container .questions-container .question .past {
   text-align: center;
