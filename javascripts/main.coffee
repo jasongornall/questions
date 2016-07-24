@@ -2,9 +2,7 @@ msnry = null
 ref = new Firebase "https://question-everything.firebaseio.com"
 
 NAV = {
-  'home': 'home'
   'faq': 'faq'
-  'exp': 'what is this'
   'graph': 'view graph'
 }
 SUBJECTS = {
@@ -27,7 +25,6 @@ ref.authAnonymously (err, data) ->
   renderHeader = ->
 
     $header = $('body > .container > .header')
-    nav_selected = 'home'
     subject_selected = 'test'
     times_selected = 'all'
 
@@ -36,7 +33,6 @@ ref.authAnonymously (err, data) ->
         for key, val of NAV
           div '.nav-item', 'data': {
             'nav': key
-            'selected': "#{key is nav_selected}"
           }, -> val
       div '.subjects', ->
         for key, val of SUBJECTS

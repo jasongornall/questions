@@ -95,6 +95,9 @@ body .container > .header > .nav {
   justify-content: flex-end;
   font-size: 11px;
   padding: 10px;
+  position: absolute;
+  top: 0;
+  padding: 22px;
 }
 body .container > .header > .nav > .nav-item {
   padding: 0 10px;
@@ -111,6 +114,7 @@ body .container > .header > .subjects {
   padding: 10px;
   margin: 0 auto;
   overflow: hidden;
+  padding: 10px 0;
 }
 body .container > .header > .subjects .subject {
   padding: 0 15px;

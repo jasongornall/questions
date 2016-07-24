@@ -6,9 +6,7 @@ msnry = null;
 ref = new Firebase("https://question-everything.firebaseio.com");
 
 NAV = {
-  'home': 'home',
   'faq': 'faq',
-  'exp': 'what is this',
   'graph': 'view graph'
 };
 
@@ -37,9 +35,8 @@ past_questions = [];
 ref.authAnonymously(function(err, data) {
   var questionHtml, renderHeader, renderQuestion;
   renderHeader = function() {
-    var $header, nav_selected, subject_selected, times_selected;
+    var $header, subject_selected, times_selected;
     $header = $('body > .container > .header');
-    nav_selected = 'home';
     subject_selected = 'test';
     times_selected = 'all';
     $header.html(teacup.render(function() {
@@ -50,8 +47,7 @@ ref.authAnonymously(function(err, data) {
           val = NAV[key];
           _results.push(div('.nav-item', {
             'data': {
-              'nav': key,
-              'selected': "" + (key === nav_selected)
+              'nav': key
             }
           }, function() {
             return val;
