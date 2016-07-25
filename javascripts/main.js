@@ -11,7 +11,7 @@ SUBJECTS = {
   'fun': 'Fun',
   'serious': 'Serious',
   'stories': 'Stories',
-  'test': 'testing2'
+  'scary': 'Scary'
 };
 
 TIMES = {
@@ -34,7 +34,7 @@ ref.authAnonymously(function(err, data) {
   renderHeader = function() {
     var $header, subject_selected, times_selected;
     $header = $('body > .container > .header');
-    subject_selected = 'test';
+    subject_selected = 'fun';
     times_selected = 'all';
     $header.html(teacup.render(function() {
       div('.nav', function() {

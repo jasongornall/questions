@@ -8,7 +8,7 @@ SUBJECTS = {
   'fun': 'Fun'
   'serious': 'Serious'
   'stories': 'Stories'
-  'test': 'testing2'
+  'scary': 'Scary'
 }
 TIMES  = {
   'hour': 'past hour'
@@ -24,7 +24,7 @@ ref.authAnonymously (err, data) ->
   renderHeader = ->
 
     $header = $('body > .container > .header')
-    subject_selected = 'test'
+    subject_selected = 'fun'
     times_selected = 'all'
 
     $header.html teacup.render ->
