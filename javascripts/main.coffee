@@ -8,7 +8,7 @@ SUBJECTS = {
   'fun': 'Fun'
   'serious': 'Serious'
   'stories': 'Stories'
-  'scary': 'Scary'
+  'whatever': 'Whatever'
 }
 TIMES  = {
   'hour': 'past hour'
