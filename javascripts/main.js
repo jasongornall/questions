@@ -175,7 +175,7 @@ ref.authAnonymously(function(err, data) {
   renderQuestion = function(link, previous) {
     var $questions, getNextQ, time;
     if (link == null) {
-      link = "test";
+      link = "fun";
     }
     if (previous == null) {
       previous = false;
@@ -528,5 +528,5 @@ ref.authAnonymously(function(err, data) {
     });
   };
   renderHeader();
-  return renderQuestion('test');
+  return renderQuestion('fun');
 });

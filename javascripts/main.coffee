@@ -91,7 +91,7 @@ ref.authAnonymously (err, data) ->
             flag = flag and ans.next
         if not flag and not answer
           div '.asterisk', -> 'dead end'
-  renderQuestion = (link = "test", previous = false) ->
+  renderQuestion = (link = "fun", previous = false) ->
     past_questions = [] unless previous
 
     # make sure we have the right time
@@ -341,7 +341,7 @@ ref.authAnonymously (err, data) ->
 
 
   renderHeader()
-  renderQuestion 'test'
+  renderQuestion 'fun'
 
 
 
