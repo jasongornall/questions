@@ -11,7 +11,7 @@ SUBJECTS = {
   'fun': 'Fun',
   'serious': 'Serious',
   'stories': 'Stories',
-  'test': 'testing'
+  'test': 'testing2'
 };
 
 TIMES = {
