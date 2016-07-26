@@ -213,6 +213,8 @@ body .container .questions-container .question .answers .text {
 body .container .questions-container .question .answers .text:before {
   content: '\2022';
   margin: 0 9px;
+  font-size: 10px;
+  vertical-align: middle;
 }
 body .container .questions-container .question > .answers .text:hover {
   cursor: pointer;
