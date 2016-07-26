@@ -206,9 +206,13 @@ body .container .questions-container .question .past > .options > i[data-disable
   cursor: default;
 }
 body .container .questions-container .question .answers .text {
-  display: list-item;
+  display: inline;
   list-style-position: inside;
   text-indent: 2em;
+}
+body .container .questions-container .question .answers .text:before {
+  content: '\2022';
+  margin: 0 9px;
 }
 body .container .questions-container .question > .answers .text:hover {
   cursor: pointer;
@@ -222,10 +226,7 @@ body .container .questions-container .question .answers > div {
   position: relative;
 }
 body .container .questions-container .question .answers .count {
-  position: absolute;
-  left: 0;
   opacity: 0.2;
-  top: 0;
 }
 body .container .questions-container .question .asterisk {
   font-size: 12px;

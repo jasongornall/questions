@@ -82,12 +82,12 @@ ref.authAnonymously (err, data) ->
             ans = data["answer_#{opt}"]
             continue unless ans
             div ->
+              span '.count', -> "#{ans.count or 0}"
               span '.text', data: {
                 answer: "answer_#{opt}"
                 next: ans.next
                 selected: answer is "answer_#{opt}"
               }, -> ans.text
-              span '.count', -> "#{ans.count or 0}"
             flag = flag and ans.next
         if not flag and not answer
           div '.asterisk', -> 'dead end'

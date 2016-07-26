@@ -147,7 +147,10 @@ ref.authAnonymously(function(err, data) {
               continue;
             }
             div(function() {
-              span('.text', {
+              span('.count', function() {
+                return "" + (ans.count || 0);
+              });
+              return span('.text', {
                 data: {
                   answer: "answer_" + opt,
                   next: ans.next,
@@ -155,9 +158,6 @@ ref.authAnonymously(function(err, data) {
                 }
               }, function() {
                 return ans.text;
-              });
-              return span('.count', function() {
-                return "" + (ans.count || 0);
               });
             });
             _results.push(flag = flag && ans.next);

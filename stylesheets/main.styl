@@ -181,9 +181,12 @@ body
               color gray
               cursor default
         .answers .text
-          display list-item
+          display inline
           list-style-position inside
           text-indent 2em
+          &:before
+            content: '\2022'
+            margin: 0 9px;
         > .answers .text
           &:hover
             cursor pointer
@@ -195,10 +198,7 @@ body
           > div
             position relative
           .count
-            position absolute
-            left 0
             opacity .2
-            top 0
 
         .asterisk
           font-size: 12px;
