@@ -478,7 +478,6 @@ ref.authAnonymously(function(err, data) {
             link = "leaf/" + (ref.child('leaf').push().key());
           }
           $el = $(e.currentTarget);
-          debugger;
           new_q = ref.child(link).push();
           new_q_obj = {
             answer_1: {
