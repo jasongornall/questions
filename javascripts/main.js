@@ -501,7 +501,6 @@ ref.authAnonymously(function(err, data) {
             };
             c++;
           }
-          debugger;
           new_q.set(new_q_obj, function() {
             var question_location;
             if (!previous) {
@@ -509,7 +508,6 @@ ref.authAnonymously(function(err, data) {
             }
             question_location = "" + link + "/" + (new_q.key());
             return ref.child("" + previous + "/next").set(link, function() {
-              debugger;
               return renderQuestion(link, previous);
             });
           });
