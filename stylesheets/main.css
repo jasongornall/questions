@@ -1,4 +1,4 @@
-.support {
+.footer {
   display: none;
   position: fixed;
   top: 0;
@@ -7,11 +7,11 @@
   padding: 20px;
   color: #fff;
 }
-.support a {
+.footer a {
   color: #fff;
 }
 @media screen and (min-width: 1100px) {
-  .support {
+  .footer {
     display: block;
   }
 }
@@ -299,6 +299,7 @@ body .container .questions-container .question .new-question .text-area-containe
 body .container .questions-container .question .new-question input[type=submit] {
   margin-top: 5px;
   background: rgba(128,128,128,0.5);
+  color: #fff;
 }
 body .container .questions-container .question-body {
   color: #0f0;
