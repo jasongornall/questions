@@ -300,6 +300,7 @@ body .container .questions-container .question .new-question input[type=submit] 
   margin-top: 5px;
   background: rgba(128,128,128,0.5);
   color: #fff;
+  cursor: pointer;
 }
 body .container .questions-container .question-body {
   color: #0f0;
