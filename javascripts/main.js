@@ -523,6 +523,8 @@ ref.authAnonymously(function(err, data) {
             $pop = $new_question.find('.modalDialog.link_popup');
             $pop.find("#socials").jsSocials({
               url: "https://infernalscoop.com?link=" + new_key,
+              showLabel: false,
+              showCount: false,
               shares: ["email", "twitter", "facebook", "linkedin", "pinterest", "stumbleupon", "whatsapp"]
             });
             $pop.find('.link-to-share').text("https://infernalscoop.com?link=" + new_key);
