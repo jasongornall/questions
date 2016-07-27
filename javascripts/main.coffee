@@ -24,7 +24,8 @@ ref.authAnonymously (err, data) ->
   renderHeader = ->
 
     $header = $('body > .container > .header')
-    subject_selected = 'fun'
+    ran_items = ['fun', 'serious', 'stories', 'whatever']
+    subject_selected = ran_items[Math.floor(Math.random()*ran_items.length)];
     times_selected = 'all'
 
     $header.html teacup.render ->
@@ -68,7 +69,11 @@ ref.authAnonymously (err, data) ->
     {question, vote, title, key, answer, link} = data or {}
     item = localStorage.getItem(key) or {}
     return teacup.render ->
-      div wrapper, 'data-key': key, 'data-link': link, ->
+      div wrapper, 'data-key': key, 'data-link': link, 'data-hidden': vote < -2, ->
+        div '.below-threshold', ->
+          span -> 'Content is below '
+          span '.num', -> '-2'
+          span -> ' threshold. Click to view anyway'
         if not answer
           div '.voting', ->
             div 'data-arrow':'up'
@@ -149,6 +154,9 @@ ref.authAnonymously (err, data) ->
 
           $questions.append $question
           do ($question) ->
+            $question.find('.below-threshold').on 'click', (e) ->
+              $(e.currentTarget).closest('[data-hidden]').attr('data-hidden', false)
+              window.msnry.masonry()
             $question.find('[data-arrow]').on 'click', (e) ->
               $el = $ e.currentTarget
               incriment = if $el.data('arrow') is 'up' then 1 else -1
@@ -171,6 +179,12 @@ ref.authAnonymously (err, data) ->
                 new_val = currentVote + modified_incriment
                 ref.child("#{link}/#{key}/vote").set new_val
                 ref.child("#{link}/#{key}/vote_inverse").set new_val * -1
+
+            [1..4].forEach (opt) ->
+              ans = child_item["answer_#{opt}"]
+              return unless ans
+              ref.child("#{link}/#{key}/answer_#{opt}/count").on 'value', (count_doc) ->
+                $question.find("[data-answer=answer_#{opt}]").prev().text "#{count_doc.val() or 0}"
 
             ref.child("#{link}/#{key}/vote").on 'value', (vote_doc) ->
               new_vote = vote_doc?.val() or 0

@@ -32,9 +32,10 @@ past_questions = [];
 ref.authAnonymously(function(err, data) {
   var questionHtml, renderHeader, renderQuestion;
   renderHeader = function() {
-    var $header, subject_selected, times_selected;
+    var $header, ran_items, subject_selected, times_selected;
     $header = $('body > .container > .header');
-    subject_selected = 'fun';
+    ran_items = ['fun', 'serious', 'stories', 'whatever'];
+    subject_selected = ran_items[Math.floor(Math.random() * ran_items.length)];
     times_selected = 'all';
     $header.html(teacup.render(function() {
       div('.nav', function() {
@@ -117,9 +118,21 @@ ref.authAnonymously(function(err, data) {
     return teacup.render(function() {
       return div(wrapper, {
         'data-key': key,
-        'data-link': link
+        'data-link': link,
+        'data-hidden': vote < -2
       }, function() {
         var flag;
+        div('.below-threshold', function() {
+          span(function() {
+            return 'Content is below ';
+          });
+          span('.num', function() {
+            return '-2';
+          });
+          return span(function() {
+            return ' threshold. Click to view anyway';
+          });
+        });
         if (!answer) {
           div('.voting', function() {
             div({
@@ -243,6 +256,10 @@ ref.authAnonymously(function(err, data) {
           $question = $(questionHtml(child_item));
           $questions.append($question);
           return (function($question) {
+            $question.find('.below-threshold').on('click', function(e) {
+              $(e.currentTarget).closest('[data-hidden]').attr('data-hidden', false);
+              return window.msnry.masonry();
+            });
             $question.find('[data-arrow]').on('click', function(e) {
               var $el, incriment, modified_incriment;
               $el = $(e.currentTarget);
@@ -264,6 +281,16 @@ ref.authAnonymously(function(err, data) {
                 new_val = currentVote + modified_incriment;
                 ref.child("" + link + "/" + key + "/vote").set(new_val);
                 return ref.child("" + link + "/" + key + "/vote_inverse").set(new_val * -1);
+              });
+            });
+            [1, 2, 3, 4].forEach(function(opt) {
+              var ans;
+              ans = child_item["answer_" + opt];
+              if (!ans) {
+                return;
+              }
+              return ref.child("" + link + "/" + key + "/answer_" + opt + "/count").on('value', function(count_doc) {
+                return $question.find("[data-answer=answer_" + opt + "]").prev().text("" + (count_doc.val() || 0));
               });
             });
             ref.child("" + link + "/" + key + "/vote").on('value', function(vote_doc) {

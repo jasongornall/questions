@@ -155,6 +155,22 @@ body .container .questions-container .question {
   white-space: pre-wrap;
   width: 300px;
 }
+body .container .questions-container .question .below-threshold {
+  display: none;
+}
+body .container .questions-container .question .below-threshold .num {
+  color: #f00;
+}
+body .container .questions-container .question[data-hidden="data-hidden"] > div {
+  display: none;
+}
+body .container .questions-container .question[data-hidden="data-hidden"] > div.below-threshold {
+  display: block;
+  cursor: pointer;
+}
+body .container .questions-container .question[data-hidden="data-hidden"] > div.below-threshold:hover {
+  text-decoration: underline;
+}
 body .container .questions-container .question.no-border {
   border: none;
   margin: 0;

@@ -141,6 +141,18 @@ body
         word-wrap: break-word;
         white-space: pre-wrap;
         width 300px
+        .below-threshold
+          display none
+          .num
+            color #f00
+        &[data-hidden="data-hidden"]
+          > div
+            display none
+          > div.below-threshold
+            display block
+            cursor pointer
+            &:hover
+              text-decoration underline
         &.no-border
           border none
           margin 0
