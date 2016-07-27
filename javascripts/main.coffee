@@ -1,6 +1,6 @@
 msnry = null
 ref = new Firebase "https://question-everything.firebaseio.com"
-
+links_ref = new Firebase "https://question-links.firebaseio.com"
 NAV = {
 
 }
@@ -20,13 +20,15 @@ authedData = null
 start_time = 0
 end_time = Date.now()
 past_questions = []
+
+ran_items = ['fun', 'serious', 'stories', 'whatever']
+subject_selected = ran_items[Math.floor(Math.random()*ran_items.length)]
+times_selected = 'all'
+
 ref.authAnonymously (err, data) ->
   renderHeader = ->
 
     $header = $('body > .container > .header')
-    ran_items = ['fun', 'serious', 'stories', 'whatever']
-    subject_selected = ran_items[Math.floor(Math.random()*ran_items.length)];
-    times_selected = 'all'
 
     $header.html teacup.render ->
       div '.nav', ->
@@ -229,6 +231,12 @@ ref.authAnonymously (err, data) ->
           if previous
             div '.past', 'data-count': 0, ->
               div '.topic', -> 'previous answers'
+              i ".material-icons.link", -> 'link'
+              div '.modalDialog.link_popup', ->
+                div '.wrapper-pop', ->
+                  h3 -> 'Share a link to this point'
+                  span class: 'close', -> 'X'
+                  div '.link-to-share', 'http://www.google.com'
               div '.options', ->
                 i ".material-icons.back", 'data-disabled': "#{past_questions.length is 1}", ->
                  'navigate_before'
@@ -236,7 +244,7 @@ ref.authAnonymously (err, data) ->
                 i '.material-icons.next', 'data-disabled': "true", -> 'navigate_next'
               div '.old-questions', ->
                 raw questionHtml past_questions[0], '.old-question'
-          div '.modalDialog', ->
+          div '.modalDialog.new', ->
             div '.new-question', ->
               h3 -> 'Submitting a new Post'
               span class: 'close', -> 'X'
@@ -261,8 +269,8 @@ ref.authAnonymously (err, data) ->
       do ($new_question) ->
         $questions.prepend $new_question
 
-        $questions.find('.open-pop, .close').on 'click', ->
-          $new_question.find('.modalDialog').toggleClass 'visible'
+        $questions.find('.modalDialog.new .open-pop, .modalDialog.new .close').on 'click', ->
+          $new_question.find('.modalDialog.new').toggleClass 'visible'
 
         $new_question.find('.options .jump').on 'click', (e) ->
           $el = $ e.currentTarget
@@ -276,6 +284,30 @@ ref.authAnonymously (err, data) ->
 
           past_questions.splice(0, index + 1)
           renderQuestion old_link, key_previous
+        $questions.find('.modalDialog.link_popup .close').on 'click', ->
+          $new_question.find('.modalDialog.link_popup').removeClass 'visible'
+
+        $new_question.find('.link').on 'click', ->
+          past_questions_copy = $.extend {}, past_questions
+          for q in past_questions_copy
+            for c in [1..4]
+              if q?["answer_#{c}"]?.count
+                delete q?["answer_#{c}"]?.count
+
+          new_key = links_ref.push().key()
+          $header = $('body > .container > .header')
+
+          links_ref.child(new_key).set {
+            time: $header.find('.times [data-selected="true"]').data('time')
+            subject: $header.find('.subjects [data-selected="true"]').data('subject')
+            past_questions: past_questions_copy
+            current:
+              link: link
+              previous: previous
+          }, (e, a) ->
+            $pop = $new_question.find('.modalDialog.link_popup')
+            $pop.find('.link-to-share').text "https://infernalscoop.com?link=#{new_key}"
+            $pop.toggleClass 'visible'
 
         $new_question.find('.options .back, .options .next').on 'click', (e) ->
           $el = $ e.currentTarget
@@ -348,7 +380,19 @@ ref.authAnonymously (err, data) ->
 
 
   renderHeader()
-  renderQuestion 'fun'
+  history_link = url('?link')
+  if not history_link
+    renderQuestion subject_selected
+  else
+    links_ref.child(history_link).once 'value', (history_link_doc) ->
+      history_links = history_link_doc.val()
+      if history_links
+        past_questions = history_links.past_questions
+        subject_selected = history_links.subject
+        times_selected = history_links.time
+        renderQuestion history_links.current.link, history_links.current.previous
+      else
+        renderQuestion subject_selected
 
 
 

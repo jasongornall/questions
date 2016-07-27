@@ -187,6 +187,18 @@ body .container .questions-container .question .past .old-questions {
   border: 1px dashed rgba(255,255,255,0.2);
   margin-top: 20px;
 }
+body .container .questions-container .question .past .topic {
+  display: inline-block;
+}
+body .container .questions-container .question .past .link {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+  color: #09fbfc;
+}
+body .container .questions-container .question .past .link:hover {
+  text-decoration: underline;
+}
 body .container .questions-container .question .past .old-question {
   position: relative;
 }
