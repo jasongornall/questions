@@ -474,7 +474,7 @@ ref.authAnonymously(function(err, data) {
       }));
       (function($new_question) {
         $questions.prepend($new_question);
-        $questions.find('.modalDialog.new .open-pop, .modalDialog.new .close').on('click', function() {
+        $questions.find('.open-pop, .modalDialog.new .close').on('click', function() {
           return $new_question.find('.modalDialog.new').toggleClass('visible');
         });
         $new_question.find('.options .jump').on('click', function(e) {
@@ -523,8 +523,6 @@ ref.authAnonymously(function(err, data) {
             $pop = $new_question.find('.modalDialog.link_popup');
             $pop.find("#socials").jsSocials({
               url: "https://infernalscoop.com?link=" + new_key,
-              showLabel: false,
-              showCount: false,
               shares: ["email", "twitter", "facebook", "linkedin", "pinterest", "stumbleupon", "whatsapp"]
             });
             $pop.find('.link-to-share').text("https://infernalscoop.com?link=" + new_key);

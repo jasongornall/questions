@@ -270,7 +270,7 @@ ref.authAnonymously (err, data) ->
       do ($new_question) ->
         $questions.prepend $new_question
 
-        $questions.find('.modalDialog.new .open-pop, .modalDialog.new .close').on 'click', ->
+        $questions.find('.open-pop, .modalDialog.new .close').on 'click', ->
           $new_question.find('.modalDialog.new').toggleClass 'visible'
 
         $new_question.find('.options .jump').on 'click', (e) ->
@@ -309,8 +309,6 @@ ref.authAnonymously (err, data) ->
             $pop = $new_question.find('.modalDialog.link_popup')
             $pop.find("#socials").jsSocials {
               url: "https://infernalscoop.com?link=#{new_key}"
-              showLabel: false,
-              showCount: false,
               shares: [
                 "email"
                 "twitter"
