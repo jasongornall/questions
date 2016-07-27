@@ -236,7 +236,8 @@ ref.authAnonymously (err, data) ->
                 div '.wrapper-pop', ->
                   h3 -> 'Share a link to this point'
                   span class: 'close', -> 'X'
-                  div '.link-to-share', 'http://www.google.com'
+                  h3 '.link-to-share', 'http://www.google.com'
+                  div '#socials'
               div '.options', ->
                 i ".material-icons.back", 'data-disabled': "#{past_questions.length is 1}", ->
                  'navigate_before'
@@ -306,6 +307,20 @@ ref.authAnonymously (err, data) ->
               previous: previous
           }, (e, a) ->
             $pop = $new_question.find('.modalDialog.link_popup')
+            $pop.find("#socials").jsSocials {
+              url: "https://infernalscoop.com?link=#{new_key}"
+              showLabel: false,
+              showCount: false,
+              shares: [
+                "email"
+                "twitter"
+                "facebook"
+                "linkedin"
+                "pinterest"
+                "stumbleupon"
+                "whatsapp"
+              ]
+            }
             $pop.find('.link-to-share').text "https://infernalscoop.com?link=#{new_key}"
             $pop.toggleClass 'visible'
 

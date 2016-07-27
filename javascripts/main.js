@@ -379,7 +379,8 @@ ref.authAnonymously(function(err, data) {
                   }, function() {
                     return 'X';
                   });
-                  return div('.link-to-share', 'http://www.google.com');
+                  h3('.link-to-share', 'http://www.google.com');
+                  return div('#socials');
                 });
               });
               div('.options', function() {
@@ -520,6 +521,12 @@ ref.authAnonymously(function(err, data) {
           }, function(e, a) {
             var $pop;
             $pop = $new_question.find('.modalDialog.link_popup');
+            $pop.find("#socials").jsSocials({
+              url: "https://infernalscoop.com?link=" + new_key,
+              showLabel: false,
+              showCount: false,
+              shares: ["email", "twitter", "facebook", "linkedin", "pinterest", "stumbleupon", "whatsapp"]
+            });
             $pop.find('.link-to-share').text("https://infernalscoop.com?link=" + new_key);
             return $pop.toggleClass('visible');
           });
